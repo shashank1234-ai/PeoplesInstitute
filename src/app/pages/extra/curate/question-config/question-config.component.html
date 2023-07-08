@@ -1,0 +1,64 @@
+<h1>
+    Create Questions For
+</h1>
+<h3>
+    Exam:{{Exam}}
+</h3>
+<div class="align-right" (click)="navigate('/oep/curate')">
+    <img class="back-arrow" src="../../../../../assets/images/icons/arrow-left.png"/>
+    <span>Back</span>
+</div>
+
+<div>
+      <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title style="font-weight: bolder;">
+          <h2>PHYSICS</h2>
+        </mat-panel-title>
+        <mat-panel-description>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div *ngFor="let chapter of ChapterList;let i=index">
+        <a (click)="openModal('curateQuestion')" class="decorate-chapter">{{chapter}}</a>
+      </div>
+    </mat-expansion-panel>
+</div>
+
+<div class="modal" id="curateQuestion">
+	<article class="modal-container">
+		<header class="modal-container-header">
+			<h1 class="modal-container-title">
+                <img src="../../../../../assets/images/icons/clipboard.png" style="width: 10%;"/>
+                Creat Questions
+            </h1>
+			<button class="icon-button" (click)="closeModal('curateQuestion')">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+					<path fill="none" d="M0 0h24v24H0z" />
+					<path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+				</svg>
+			</button>
+		</header>
+		<section class="modal-container-body rtf">
+            <div style="">
+			<div class="col-lg-4">
+                <label>Number Of Questions</label>
+                <input style="height:35px" type="text" class="form-control" [(ngModel)]="NoOfQs" />
+                </div>
+                <div class="col-lg-4">
+                <label>Difficulty level</label>
+                <input style="height:35px" type="text" class="form-control" [(ngModel)]="DifficultyLevel" />
+                </div>
+                <div class="col-lg-4">
+                <label>Type of Questions</label>
+                <input style="height:35px" type="text" class="form-control" [(ngModel)]="TypesOfQs" />
+                </div>
+            </div>
+		</section>
+		<footer class="modal-container-footer">
+			<!-- <button class="button is-ghost" (click)="closeModal('curateQuestion')">Cancel</button> -->
+			<button class="nxt-btn col-sm-3" mat-flat-button color="primary" >Generate</button>
+		</footer>
+	</article>
+</div>
+
+

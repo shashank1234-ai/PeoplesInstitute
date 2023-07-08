@@ -1,0 +1,39 @@
+<div class="flex-layout">
+  <app-branding></app-branding>
+  <mat-nav-list class="sidebar-list">
+    <app-nav-item *ngFor="let item of navItems" [item]="item"> </app-nav-item>
+    <a mat-list-item *ngIf="superAdmin"
+  class="menu-list-item"
+>
+  <i-tabler 
+    class="routeIcon"
+    name="flag-filled"
+    matListItemIcon
+  ></i-tabler>
+  <span class="hide-menu">Onboard Country</span>
+</a>
+
+<a mat-list-item (click)="logout()"
+class="menu-list-item"
+>
+<i-tabler
+  class="routeIcon"
+  name="lock"
+  matListItemIcon
+></i-tabler>
+<span class="hide-menu">Logout</span>
+</a>
+  </mat-nav-list>
+  <div class="p-24 m-t-auto">
+    <div class="d-flex align-items-center rounded p-20 m-t-20">
+      <div>
+      </div>
+      <img
+        src="../../../../assets/images/logos/Black.png"
+        alt="imgae"
+        class="side-img"
+        style="width: 60%;"
+      />
+    </div>
+  </div>
+</div>

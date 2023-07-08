@@ -1,0 +1,210 @@
+<h1>
+    Exam Onboard Configuration
+</h1>
+<div *ngIf="loader">
+  <img src="../../../assets/loader.gif"/>
+</div>
+<div *ngIf="step=='basicInfo' &&!loader">
+<h3>Basic Information</h3>
+<div class="row align-row">
+<div class="align-vertical col-lg-3">
+<label>Exam Name</label>
+<input style="height:35px" type="text" class="form-control" [(ngModel)]="ExamName" disabled="{{!Editable}}" />
+</div>
+<div class="align-vertical col-lg-3">
+<label> Exam Level</label>
+<input style="height:35px" type="text" class="form-control" [(ngModel)]="Examlevel" disabled="{{!Editable}}" />
+</div>
+<div class="align-vertical col-lg-3">
+<label>
+  Class*
+</label>
+<input type="text" id="class" class="form-control" style="height:35px" [(ngModel)]="Classes"/>
+<p>
+  Enter Classes that give the exam comma seperated (eg:11,12,12+)
+</p>
+</div>
+<button class="primary col-sm-3" mat-flat-button color="primary"  style="margin-top: 2%;" (click)="createExam()">
+    Create
+  </button> 
+</div>
+<p style="color:rgb(128, 113, 0);">{{ExamCreateMessage}}</p>
+<!-- <div *ngIf="Examcreate"> -->
+<div>
+  <a style="cursor: pointer;" (click)="openModal('questionModal')">
+    <img src="../../../../../assets/images/icons/circle-plus.png" class="add-btn" alt="add new subject"/>
+    <p class="text-sub">Add Subject</p>
+  </a>
+</div>
+  <table>
+    <thead>
+    <tr>
+      <th>Subject Code</th>
+      <th>Description</th>
+      <th>Action</th>
+    </tr>
+</thead>
+<tbody *ngIf="SubjectList.length>0">
+    <tr *ngFor="let subject of SubjectList;let i=index">
+      <td>{{subject.SubjectCode}}</td>
+      <td>{{subject.Description}}</td>
+      <td><button class="primary col-sm-3" mat-flat-button color="primary">Update</button></td>
+    </tr>
+</tbody>
+<div *ngIf="SubjectList.length>0">
+    <button class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="StepTo('SubjectConfig')">Next</button>
+</div>
+<tbody *ngIf="SubjectList.length==0">
+    <div class="emptyState">
+        <div class="emptyState__visual">
+            <img src="../../../../../assets/images/icons/hex.png"/>
+        </div>
+    
+        <h2 class="emptyState__title">
+            No Subjects Added Yet!!
+        </h2>
+        <div class="emptyState__description">
+            Start Adding the subjects
+        </div>
+    </div>
+</tbody>
+  </table>
+  <!-- </div> -->
+  <div class="modal" id="questionModal">
+	<article class="modal-container">
+		<header class="modal-container-header">
+			<h1 class="modal-container-title">
+                <img src="../../../../../assets/images/icons/clipboard.png" style="width: 10%;"/>
+                Configure a subject
+            </h1>
+			<button class="icon-button" (click)="closeModal('questionModal')">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+					<path fill="none" d="M0 0h24v24H0z" />
+					<path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+				</svg>
+			</button>
+		</header>
+		<section class="modal-container-body rtf">
+            <!-- <div style="display: flex;justify-content: space-around;">
+			          <div class="col-lg-4">
+                <label>Subject Code</label>
+                <input style="height:35px" type="text" class="form-control" [(ngModel)]="subjectCode" />
+                </div>
+                <div class="col-lg-4">
+                  <label>Subject Name</label>
+                  <input style="height:35px" type="text" class="form-control" [(ngModel)]="subjectName" />
+                  </div>
+                <div class="col-lg-4">
+                <label>Description</label>
+                <input style="height:35px" type="text" class="form-control" [(ngModel)]="SubjectDescription" />
+                </div>
+                
+            </div> -->
+            <div class="row">
+
+              <label class="col-lg-12">
+                Select A Subject
+              </label>
+              <!-- <select  class="dropdown form-control col-lg-12" (select)="OnselectSubject($event)" multiple>
+                <option value="">Please Select</option>
+                <option *ngFor="let subject of subjectList;let i=index" value="{{subject}}">{{subject.data.Subjectname}}</option>
+              </select> -->
+              <div class="dropdown">
+                <input type="text" class="dropdown-toggle" id="dropdownToggle" placeholder="Select Options">
+                <div class="dropdown-menu">
+                  <input type="text" id="searchInput" class="search-input" placeholder="Search">
+                  <div class="options">
+                    <label><input type="checkbox" name="option1" value="option1">Option 1</label>
+                    <label><input type="checkbox" name="option2" value="option2">Option 2</label>
+                    <label><input type="checkbox" name="option3" value="option3">Option 3</label>
+                    <label><input type="checkbox" name="option4" value="option4">Option 4</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+		</section>
+		<footer class="modal-container-footer">
+			<!-- <button class="button is-ghost" (click)="closeModal('questionModal')">Decline</button> -->
+			<button class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="AddSubject()">Add</button>
+		</footer>
+	</article>
+</div>
+</div>
+
+<div *ngIf="step=='SubjectConfig'&&!loader">
+<h3>Subject Section Configuration</h3>
+<div class="align-right" (click)="StepTo('basicInfo')">
+    <img class="back-arrow" src="../../../../../assets/images/icons/arrow-left.png"/>
+    <span>Back</span>
+</div>
+<mat-expansion-panel *ngFor="let subject of SubjectList;let j=index">
+    <mat-expansion-panel-header>
+      <mat-panel-title style="font-weight: bolder;">
+        <h2>{{subject.SubjectCode}}</h2>
+      </mat-panel-title>
+      <mat-panel-description>
+        {{subject.Description}}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div>
+          <form [formGroup]="SectionTable" style="height: max-content;">
+          <table class="table table-border">
+            <thead class="text-nowrap">
+              <th>Section Type <span class="ui-column-resizer" dragableColumn> </span></th>
+              <th>No of questions<span class="ui-column-resizer" dragableColumn> </span></th>
+              <th>Action<span class="ui-column-resizer" dragableColumn> </span></th>
+              <th></th>
+            </thead>
+            <tbody>
+              <ng-container formArrayName="tableRows" *ngFor="let group of getFormControls.controls ; let i=index">
+                <tr *ngIf="group.get('isEditable')?.value" [formGroupName]="i">
+                  <td>
+                    <mat-form-field>
+                      <mat-select formControlName="sectionType">
+                        <mat-option value="MCQ (Single Correct)">MCQs(Single Correct)</mat-option>
+                        <mat-option value="MCQ (Multi Correct)">MCQ(Multi Correct)</mat-option>
+                        <mat-option value="Subjective">Subjective</mat-option>
+                        <mat-option value="Reasoning">Reasoning</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field>
+                      <input matInput type="text" formControlName="NoOfQs">
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-icon class="delete" (click)="deleteRow(i)">delete_forever</mat-icon>
+                    <mat-icon class="done" (click)="doneRow(group)">done</mat-icon>
+                  </td>
+                </tr>
+                <tr *ngIf="!group.get('isEditable')?.value" >
+                  <td>
+                    {{group.get('sectionType')?.value}}
+                  </td>
+                  <td>
+                    {{group.get('NoOfQs')?.value}}
+                  </td>
+                  <td>
+                    <mat-icon class="edit" (click)="editRow(group)">edit</mat-icon>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+          </form>
+    </div>
+    <label class="align-upload-text upload-txt">
+        Upload past 10 years Question papers*
+    </label>
+    <div class="upload align-upload-text">
+    
+    <input type="file" class="form-control align" />
+</div>
+    <p class="text-danger align-upload-text">*Please upload in .zip format</p>
+  </mat-expansion-panel>
+
+  <div>
+    <button class="col-sm-3 finish-btn" mat-flat-button color="primary" (click)="Submit()">Finish</button>
+</div>
+</div>

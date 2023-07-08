@@ -1,0 +1,67 @@
+<mat-card class="cardWithShadow theme-card">
+  <!-- <mat-card-header>
+    <mat-card-title class="m-b-0">Exam Lists</mat-card-title>
+    <button class="primary col-sm-3" mat-flat-button color="primary"  style="margin-left: 57%;" (click)="navigate('onboard-exam')">
+    </button>
+  </mat-card-header> -->
+  <mat-card-content class="b-t-1">
+    <div class="row">
+      
+      
+
+      <div class="col-12">
+        <mat-card class="b-1 shadow-none">
+          <mat-card-content class="b-t-1">
+            <div class="row">
+              <div class="col-sm-3">
+                <button mat-flat-button color="primary" class="w-100" (click)="NavigateToCurate('Engineering')">
+                  Engnineering
+                </button>
+              </div>
+              <div class="col-sm-3">
+                <button mat-flat-button color="accent" class="w-100" (click)="NavigateToCurate('Medical')">
+                  Medical
+                </button>
+              </div>
+              <div class="col-sm-3">
+                <button mat-flat-button color="warn" class="w-100" (click)="NavigateToCurate('Railways')">
+                  Railways
+              </button>
+              </div>
+              <div class="col-sm-3">
+                <button mat-flat-button color="primary" class="w-100" (click)="NavigateToCurate('Banking')">
+                  Banking
+              </button>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-sm-3">
+                <button mat-flat-button color="primary" class="w-100" (click)="NavigateToCurate('CPT')">
+                  CPT
+                </button>
+              </div>
+              <div class="col-sm-3">
+                <button mat-flat-button color="accent" class="w-100" (click)="NavigateToCurate('Postal')">
+                  Postal
+                </button>
+              </div>
+              <div class="col-sm-3">
+                <button mat-flat-button color="warn" class="w-100" (click)="NavigateToCurate('Meidcal PG')">
+                  Medical PG
+                </button>
+              </div>
+              <div class="col-sm-3">
+                <button mat-flat-button color="primary" class="w-100" >
+                  Others
+              </button>
+              </div>
+            </div>
+            <br>
+            
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

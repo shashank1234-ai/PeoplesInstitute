@@ -1,0 +1,82 @@
+<mat-card class="cardWithShadow theme-card">
+    <mat-card-header>
+      <mat-card-title class="m-b-0">Exam Lists</mat-card-title>
+      <button class="primary col-sm-3" mat-flat-button color="primary"  style="margin-left: 57%;" (click)="navigate('onboard-exam')">
+        Onboard Exam
+      </button>
+    </mat-card-header>
+    <div *ngIf="loader">
+      <img src="../../../assets/loader.gif"/>
+    </div>
+    <mat-card-content class="b-t-1" *ngIf="!loader">
+      <div class="row">
+        
+        
+  
+        <div class="col-12">
+          <mat-card class="b-1 shadow-none">
+            <mat-card-content class="b-t-1">
+              <div *ngFor="let examlist of FormattedExamLists;let i= index">
+              <div class="row">
+              <div *ngFor="let exam of examlist;let j=index" class="col-sm-3">
+                <button mat-flat-button [ngClass]="{'color-primary':j%3==1,'color-accent':j%3==2,'color-warn':j%3==0}" (click)="ExamConfiguration(exam)" class="w-100">
+                  {{exam.ExamName}}
+                </button>
+            </div>
+              </div>
+              <br>
+            </div>
+              <!-- <div class="row">
+                <div class="col-sm-3">
+                  <button mat-flat-button color="primary" class="w-100">
+                    Engnineering
+                  </button>
+                </div>
+                <div class="col-sm-3">
+                  <button mat-flat-button color="accent" class="w-100">
+                    Medical
+                  </button>
+                </div>
+                <div class="col-sm-3">
+                  <button mat-flat-button color="warn" class="w-100">
+                    Railways
+                </button>
+                </div>
+                <div class="col-sm-3">
+                  <button mat-flat-button color="primary" class="w-100">
+                    Banking
+                </button>
+                </div>
+              </div> -->
+              <br>
+              <!-- <div class="row">
+                <div class="col-sm-3">
+                  <button mat-flat-button color="primary" class="w-100">
+                    CPT
+                  </button>
+                </div>
+                <div class="col-sm-3">
+                  <button mat-flat-button color="accent" class="w-100">
+                    Postal
+                  </button>
+                </div>
+                <div class="col-sm-3">
+                  <button mat-flat-button color="warn" class="w-100">
+                    Medical PG
+                  </button>
+                </div>
+                <div class="col-sm-3">
+                  <button mat-flat-button color="primary" class="w-100">
+                    Others
+                </button>
+                </div>
+              </div> -->
+              <br>
+              
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  

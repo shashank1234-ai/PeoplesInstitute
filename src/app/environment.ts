@@ -9,6 +9,7 @@ export const environment={
   appId: "1:963672762213:web:d6f6ac614abb074772238c",
   measurementId: "G-QVHBYKDY1B"
     },
-    apiUrl:"http://127.0.0.1:3000/"
+    apiUrl:"http://127.0.0.1:3000/",
+    STORAGE_PATH :'people-s-institue.appspot.com'
 
 }

@@ -22,7 +22,7 @@ export const navItems: NavItem[] = [
   {
     displayName:'My Work',
     iconName:'subtask',
-    route:'/oep/work'
+    route:'/oep/mywork'
   },
   // {
   //   displayName: 'Logout',

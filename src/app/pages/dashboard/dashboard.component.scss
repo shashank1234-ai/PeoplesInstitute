@@ -24,7 +24,7 @@
 	justify-content: center;
 	background-color: rgba(#000, 0.25);
     display: none;
-    height: 100%;
+    height: 1800px;
 }
 
 .modal-container {
@@ -75,4 +75,17 @@
 .align-items-vertical{
     display: flex;
     flex-direction: column;
+}
+
+.close{
+	border: none;
+    background: white;
+    width: 47px;
+    height: 35px;
+}
+
+.nxt-btn{
+	float:right;
+	margin-right: 3%;
+	margin-bottom: 3%;
 }

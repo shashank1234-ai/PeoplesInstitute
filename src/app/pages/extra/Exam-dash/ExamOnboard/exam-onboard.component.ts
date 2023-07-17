@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RestapiServiceService } from 'src/app/services/restapi.service.service';
 import { Exception } from 'sass';
+import { timeout } from 'rxjs';
 
 @Component({
     selector:'app-exam-onboard',
@@ -12,10 +13,13 @@ import { Exception } from 'sass';
 })
 
 export class ExamOnboardComponent implements OnInit {
+[x: string]: any;
     SectionTable: FormGroup;
     control: FormArray;
     mode: boolean;
     touchedRows: any;
+    SubjectSelected:any
+    questionModal:boolean=false
    constructor(
     public dialog: MatDialog,
     @Inject(DOCUMENT) private document:any,
@@ -100,6 +104,8 @@ SubjectConfiguration(){
     this.step=stepTo;
   }
 
+
+
   openModal(modalName:any){
     var doc = this.document.getElementById(modalName);
     doc.style.display="block"
@@ -136,7 +142,7 @@ SubjectConfiguration(){
           this.Editable = false
           this.ExamCreateMessage="Exam Created."
           this.Examcreate = true
-  
+          this.closeModal('questionModal')
         }else{
           this.Editable = true
           this.ExamCreateMessage = res.Message
@@ -167,12 +173,42 @@ SubjectConfiguration(){
   }
   subjectName:any
   subjectList:any=[]
-  AddSubject(){
+  ExamSubectMappingId:any
+  AddSubjects(){
     console.log(this.subjectCode,this.SubjectDescription,this.subjectName)
+    console.log(this.SubjectSelected)
+    var selectedSubjectsId=[]
+    for (let i=0;i<this.SubjectSelected.length;i++){
+      selectedSubjectsId.push(
+        JSON.parse(this.SubjectSelected[i]).id
+      )
+    }
+    console.log(selectedSubjectsId)
+
+    let post_body = {
+      "ExamId":this.ExamId,
+      "SubjectIds":selectedSubjectsId
+    }
+    this.loader=true
+    // create subject exam mapping
+    this.restAPI.createExamSubjectMapping(post_body).subscribe((res:any)=>{
+    console.log(res)
+    this.loader=false
+    if (res.Status){
+this.ExamSubectMappingId = res.data
+this.getSubjectsForExam(this.ExamId)
+this.closeModal('questionModal')
+//get Subjects mapped with IDs
+    }else{
+      alert("Something went wrong reason:"+res.Message)
+    }
+    })
+    
   }
   formattedSubject:any=[]
   getSubjects(){
     this.loader=true
+    this.subjectList=[]
     this.restAPI.getSubjectList().subscribe((res:any)=>{
       console.log(res)
       this.loader=false
@@ -186,5 +222,47 @@ SubjectConfiguration(){
   OnselectSubject(e:any){
     console.log(e)
    }
-   
+   stringify(data:any){
+    return JSON.stringify(data)
+   }
+   opened:boolean=false
+   openCloseAddSubjectField(){
+    this.opened=!this.opened
+   }
+  SubjectName:any
+  SubjectCode:any
+  createSubMessage:any
+  CreateSubject(){
+    this.loader=true
+    console.log(this.subjectCode)
+    console.log(this.subjectName)
+    let SubjectObj = {
+      "Subjectcode":this.subjectCode.toUpperCase(),
+      "Subjectname":this.subjectName
+    }
+    this.restAPI.createnewSubject(SubjectObj).subscribe((res:any)=>{
+      console.log(res)
+      this.loader=false
+      if (res.Success){
+
+        this.createSubMessage='Sucessfully created'
+    
+      }else{
+        this.createSubMessage = res.Message
+      }
+    })
+    console.log(this.SubjectCode)
+  }
+  
+  getSubjectsForExam(examId:any){
+    this.loader=true
+    this.restAPI.getSubjectsForExam(examId).subscribe((res:any)=>{
+      console.log(res)
+      this.loader=false
+      if (res.Status){
+        this.SubjectList = JSON.parse(res.data).Subjects
+      }
+    })
+  }
 }
+// "rLV9JbgpnS7eTK5suynY"

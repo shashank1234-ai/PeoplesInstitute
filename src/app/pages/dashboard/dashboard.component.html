@@ -18,6 +18,9 @@
           Upload
       </button>
       </mat-card-content>
+      <mat-card-footer>
+        <p style="color:red">{{dsError}}</p>
+      </mat-card-footer>
     </mat-card>
   </div>
  
@@ -274,9 +277,9 @@
 		<header class="modal-container-header">
 			<h1 class="modal-container-title">
                 <img src="../../../../../assets/images/icons/clipboard.png" style="width: 10%;"/>
-                Data Source Upload Configuration
-              </h1>
-			<button class="icon-button" (click)="closeModal('questionModal')">
+                Configure a subject
+            </h1>
+			<button class="icon-button close" (click)="closeModal('questionModal')">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
 					<path fill="none" d="M0 0h24v24H0z" />
 					<path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
@@ -284,48 +287,51 @@
 			</button>
 		</header>
 		<section class="modal-container-body rtf">
-            <div>
-			<div class="col-lg-12">
-                <label class="col-lg-12 align-items-vertical">Exam Name</label>
-                <select class="form-control">
-                  <option>
-                    Exam 1
-                  </option>
-                  <option>
-                    Exam 2
-                  </option>
-                  <option>
-                    Exam 3
-                  </option>
-                </select>
-                <!-- <input style="height:35px" type="text" class="form-control" [(ngModel)]="ExamName" /> -->
-                </div>
-                <div class="col-lg-12">
-                <label class="col-lg-12">Subject</label>
-                <select class="form-control">
-                  <option>
-                    Subject 1
-                  </option>
-                  <option>
-                    Subject 2
-                  </option>
-                  <option>
-                    Subject 3
-                  </option>
-                </select>
-                <!-- <input style="height:35px" type="text" class="form-control" [(ngModel)]="Examlevel" /> -->
-                </div>
-                <div class="col-lg-12">
-                <label class="col-lg-12">
-                  DataSource Description
-                </label>
-                <input type="text" class="form-control" [(ngModel)]="DS_description"/>
-              </div>
-            </div>
+            <label>
+              Exam
+            </label>
+<select id="examselect" class="form-control" (change)="Onselectopt($event)">
+  <option value="">Please Select</option>
+  <option *ngFor="let exam of examList;let i = index" value="{{formatJSONToString(exam)}}">{{exam.ExamName}}</option>
+</select>
+            <label>
+              Type of Datasource
+            </label>
+            <select id="dsType" class="form-control" (change)="Onselectopt($event)">
+              <option value="">
+                Please Select
+              </option>
+              <option value="chapter_wise">
+                Chapter Wise
+              </option>
+              <option value="mock_test">
+                Mock Test
+              </option>
+            </select>
+            <label *ngIf="dsType!='mock_test'">
+              Types of questions
+            </label>
+            <select id="qtype" *ngIf="dsType!='mock_test'" class="form-control" (change)="Onselectopt($event)">
+              <option value="">Please Select</option>
+              <option value="MCQ_Single">MCQ (Single Select)</option>
+              <option value="MCQ_Multiple">MCQ (Multiple Select)</option>
+              <option value="MCQ_Descriptive">Descriptive</option>
+            </select>
+            <label>
+              Format of datasource
+            </label>
+            <select id="dsFormat" class="form-control" (change)="Onselectopt($event)">
+              <option value="">Please Select</option>
+              <option value="pdf">PDF</option>
+              <option value="excel">Excel/CSV</option>
+              <option value="json">JSON</option>
+            </select>
+            <input type="text" class="form-control" style="margin-top:3%" (blur)="OnInsertStartPage($event,'startpage')" placeholder="Start Page"/>
+            <input type="text" class="form-control" style="margin-top:3%" (blur)="OnInsertStartPage($event,'endpage')" placeholder="End Page"/>
 		</section>
 		<footer class="modal-container-footer">
-			<!-- <button class="button is-ghost" (click)="closeModal('questionModal')">Decline</button> -->
-			<button class="nxt-btn col-sm-3" mat-flat-button color="primary" >Confirm</button>
+      <p style="color: red;margin-left: 3%;font-size: large;font-weight: bold;">{{uploadError}}</p>
+			<button class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="OnSubmitDS()">Submit</button>
 		</footer>
 	</article>
 </div>

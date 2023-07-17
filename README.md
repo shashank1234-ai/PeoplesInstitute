@@ -38,3 +38,6 @@ nU3c6xDXz2CkuJ5
 
 Find the coords of top left corner of question and top right corner
 bottom left of options and extract it as a block-> check for Images -> if no of Imges in that block == > 4 -> possibility that options are also images -> Else if no of images == 1 then -> check for watermark -> if not watermark then its a match  
+
+
+gsutil cors set cors.json gs://people-s-institue.appspot.com

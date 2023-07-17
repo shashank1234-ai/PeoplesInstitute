@@ -30,24 +30,24 @@
 </div>
 <p style="color:rgb(128, 113, 0);">{{ExamCreateMessage}}</p>
 <!-- <div *ngIf="Examcreate"> -->
-<div>
+<div *ngIf="Examcreate">
   <a style="cursor: pointer;" (click)="openModal('questionModal')">
     <img src="../../../../../assets/images/icons/circle-plus.png" class="add-btn" alt="add new subject"/>
-    <p class="text-sub">Add Subject</p>
+    <p class="text-sub">Add Subjects</p>
   </a>
 </div>
-  <table>
+  <table *ngIf="Examcreate">
     <thead>
     <tr>
       <th>Subject Code</th>
-      <th>Description</th>
+      <th>Subject Name</th>
       <th>Action</th>
     </tr>
 </thead>
 <tbody *ngIf="SubjectList.length>0">
     <tr *ngFor="let subject of SubjectList;let i=index">
-      <td>{{subject.SubjectCode}}</td>
-      <td>{{subject.Description}}</td>
+      <td>{{subject.Subjectcode}}</td>
+      <td>{{subject.Subjectname}}</td>
       <td><button class="primary col-sm-3" mat-flat-button color="primary">Update</button></td>
     </tr>
 </tbody>
@@ -85,47 +85,28 @@
 			</button>
 		</header>
 		<section class="modal-container-body rtf">
-            <!-- <div style="display: flex;justify-content: space-around;">
-			          <div class="col-lg-4">
-                <label>Subject Code</label>
-                <input style="height:35px" type="text" class="form-control" [(ngModel)]="subjectCode" />
-                </div>
-                <div class="col-lg-4">
-                  <label>Subject Name</label>
-                  <input style="height:35px" type="text" class="form-control" [(ngModel)]="subjectName" />
-                  </div>
-                <div class="col-lg-4">
-                <label>Description</label>
-                <input style="height:35px" type="text" class="form-control" [(ngModel)]="SubjectDescription" />
-                </div>
-                
-            </div> -->
             <div class="row">
-
-              <label class="col-lg-12">
-                Select A Subject
-              </label>
-              <!-- <select  class="dropdown form-control col-lg-12" (select)="OnselectSubject($event)" multiple>
-                <option value="">Please Select</option>
-                <option *ngFor="let subject of subjectList;let i=index" value="{{subject}}">{{subject.data.Subjectname}}</option>
-              </select> -->
-              <div class="dropdown">
-                <input type="text" class="dropdown-toggle" id="dropdownToggle" placeholder="Select Options">
-                <div class="dropdown-menu">
-                  <input type="text" id="searchInput" class="search-input" placeholder="Search">
-                  <div class="options">
-                    <label><input type="checkbox" name="option1" value="option1">Option 1</label>
-                    <label><input type="checkbox" name="option2" value="option2">Option 2</label>
-                    <label><input type="checkbox" name="option3" value="option3">Option 3</label>
-                    <label><input type="checkbox" name="option4" value="option4">Option 4</label>
-                  </div>
-                </div>
+              <a style="cursor: pointer;" class="addnew" *ngIf="!opened" (click)="openCloseAddSubjectField()">
+                <img src="../../../../../assets/images/icons/circle-plus.png" class="add-btn addnewSub" alt="add new subject"/>
+                <p class="text-sub">Add New Subject</p>
+              </a>
+              <div *ngIf="opened" class="row" style="display:flex;color:red;justify-content: space-between;position:relative;left:5%;align-items: center;">
+              <input type="text" class="form-control col-md-3" [(ngModel)]="subjectName" placeholder="Subject Name"/>
+              <input type="text" class="form-control col-md-3" style="position:relative;left:5%" [(ngModel)]="subjectCode" placeholder="Subject Code"/>
+              <button class="form-control col-md-3 btncreate" style="position:relative;left:9%" color="primary" (click)="CreateSubject()">Create</button>
+              <a (click)="openCloseAddSubjectField()" class="col-sm-3" style="cursor: pointer;position:relative;left:8%">X</a>
               </div>
-            </div>
+              <label class="col-lg-12">
+                Select Subjects
+              </label>
+              <mat-select [(value)]="SubjectSelected" multiple="multiple" placeholder="Select Subjects that come in {{ExamName}}">
+                <mat-option value="" disabled>Please select</mat-option>
+                <mat-option *ngFor="let subject of subjectList;let i=index" value="{{stringify(subject)}}">{{subject.data.Subjectname}}</mat-option>
+              </mat-select>
+              </div>
 		</section>
 		<footer class="modal-container-footer">
-			<!-- <button class="button is-ghost" (click)="closeModal('questionModal')">Decline</button> -->
-			<button class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="AddSubject()">Add</button>
+			<button class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="AddSubjects()">Submit</button>
 		</footer>
 	</article>
 </div>
@@ -140,10 +121,10 @@
 <mat-expansion-panel *ngFor="let subject of SubjectList;let j=index">
     <mat-expansion-panel-header>
       <mat-panel-title style="font-weight: bolder;">
-        <h2>{{subject.SubjectCode}}</h2>
+        <h2>{{subject.Subjectname}}</h2>
       </mat-panel-title>
       <mat-panel-description>
-        {{subject.Description}}
+        {{subject.Subjectcode}}
       </mat-panel-description>
     </mat-expansion-panel-header>
     <div>

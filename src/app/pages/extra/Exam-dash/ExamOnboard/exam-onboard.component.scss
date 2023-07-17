@@ -302,7 +302,7 @@ a {
     align-items: center;
     align-content: flex-end;
     flex-direction: column;
-    border: 1px solid #808080a1;
+    // border: 1px solid #808080a1;
     border-radius: 5px;
     height: 100px;
     align-items: center;
@@ -406,4 +406,29 @@ a {
   
   input[type="checkbox"] {
 	margin-right: 5px;
+  }
+
+  .addnewSub{
+	margin: auto;
+    margin-right: 0;
+    margin-top: 0;
+    position: relative;
+    top: 72%;
+    width: 4%;
+    left: 2%;
+  }
+
+  .addnew{
+    cursor: pointer;
+    align-items: flex-start;
+    align-content: inherit;
+    flex-wrap: wrap;
+    position: relative;
+    bottom: 40px;
+  }
+
+  .btncreate:hover{
+	background-color: rgb(104, 104, 197);
+	color:white;
+	cursor: pointer;
   }

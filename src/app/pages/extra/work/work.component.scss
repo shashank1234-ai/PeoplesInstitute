@@ -1,0 +1,74 @@
+.heading{
+    margin-left: 2%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+.doanload{
+    border: 2px solid #61616154;
+    width: 20%;
+    position: relative;
+    left: 2%;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.success:hover{
+    background: rgba(5, 122, 5, 0.363);
+    color:white
+}
+.danger:hover{
+    background: rgba(183, 9, 9, 0.879);
+    color: white;
+}
+.danger{
+    position: relative;
+    left: 10%;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+
+  .optlabel{
+    font-weight: bolder;
+    border-bottom: 1px solid;
+    width: 100%;
+    margin-bottom: 3%;
+    margin-top: 2%;
+  }
+  .close-btn{
+    float: right;
+    font-weight: bolder;
+    font-size: x-large;
+    position: absolute;
+    right: 24px;
+    top: -12px;
+  }
+  .customradio{
+    line-height: 1.1;
+    display: grid;
+    grid-template-columns: 1em auto;
+    gap: 0.5em;
+    position: relative;
+    right: 3%;
+    top: 20px;
+  }

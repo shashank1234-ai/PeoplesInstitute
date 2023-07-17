@@ -9,7 +9,7 @@ import { ExamOnboardComponent } from './Exam-dash/ExamOnboard/exam-onboard.compo
 import { CurateDashComponent } from './curate/curate-dash/curate-dash.component';
 import { QuestionConfigComponent } from './curate/question-config/question-config.component';
 import { ExamConfigurationComponent } from './Exam-dash/ExamConfigurationDetails/exam-configurationdetails.component';
-
+import {WorkComponent} from './work/work.component';
 export const ExtraRoutes: Routes = [
   {
     path: '',
@@ -41,6 +41,10 @@ export const ExtraRoutes: Routes = [
       {
         path:'exam-dashboard/:id',
         component:ExamConfigurationComponent
+      },
+      {
+        path:'mywork',
+        component:WorkComponent
       }
     ],
   },

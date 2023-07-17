@@ -1,0 +1,185 @@
+<!-- <mat-card class="cardWithShadow theme-card">
+<h1 class="heading">My Work</h1>
+<mat-card-content class="b-t-1">
+<p>List of my work</p>
+
+
+</mat-card-content>
+</mat-card> -->
+<div *ngIf="loader">
+    <img src="../../../assets/loader.gif"/>
+  </div>
+<mat-card *ngIf="!loader" class="cardWithShadow theme-card">
+    <mat-card-header>
+      <mat-card-title class="m-b-0">My Work</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="b-t-1" *ngIf="step=='listQ'">
+      <div class="row">
+        <div class="col-12">
+          <mat-card class="b-1 shadow-none">
+            <mat-card-header>
+              <!-- <mat-card-title>List with sections</mat-card-title> -->
+            </mat-card-header>
+            <!-- <mat-card-content class="b-t-1"> -->
+              <mat-list>
+                <!-- <div mat-subheader class="mat-body-2 m-y-16 f-w-600">Notes</div> -->
+                <mat-list-item *ngFor="let work of myWorkData">
+                  <mat-icon matListItemIcon>note</mat-icon>
+                  <div matListItemTitle class="mat-body-2 f-w-600">{{ work.filename }}</div>
+                  <div matListItemLine class="f-s-14 mat-body-1">{{ work.fileurl }}</div>
+                  <div matListItemLine class="f-s-14 mat-body-1" style="color:green;font-size:large;font-weight:bolder">{{work.completePercentage}}% Complete <a style="color:blue;text-decoration: underline;cursor:pointer" *ngIf="work.completePercentage==0" (click)="startVerify(work,'new')">Start</a>
+                    <a style="color:blue;text-decoration: underline;cursor: pointer;" *ngIf="work.completePercentage!=0" (click)="startVerify(work,'continue')">Continue</a>
+                </div>
+                </mat-list-item>
+              </mat-list>
+            <!-- </mat-card-content> -->
+          </mat-card>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-content class="b-t-1 col-lg-12" *ngIf="step=='verifyQs'">
+      <div *ngIf="!edit" (click)="BackToListing()" style="float: right;position: absolute;right: -145px;">
+        <img src="../../../../assets/images/icons/arrow-left.png" style="width:10%"/>
+        <span>Back</span>
+      </div>
+      <div class="doanload" (click)="downloadPfd()">
+        <img style="position: relative;left: 2%;" src="../../../../assets/images/icons/download.png" />
+        <span [matTooltip]="'You can download the file uploaded for reference'">Download Pdf</span>
+      </div>
+      
+        <div class="col-lg-12" *ngFor="let quest of questionList | paginate: { itemsPerPage: 1, currentPage: p };let i=index" style="margin-top: 2%;">
+          <div  *ngIf="!edit && quest.Question.length>0">{{quest.Question.length}}
+          <div style="cursor:pointer;float:right;margin-right:3%" (click)="EditQuestion(quest,p)" >
+            <img src="../../../../assets/images/icons/pencil.png"/>
+          </div>
+            <!-- <div *ngIf="!quest.verified"> -->
+            <div >
+            <label>Question :</label>
+            <span>{{quest.Question}}</span>
+            </div>
+            <div *ngIf="quest.image!=undefined">
+                <label>Image:</label>
+                <!-- <span>{{basedecode(quest.image)}}</span> -->
+                <img src="{{basedecode(quest.image)}}" class="form-control" />
+            </div>
+            <div *ngFor="let opt of quest.options;let j= index">
+              <!-- <li >{{opt}}</li>-->
+              <input  type="radio" class="customradio" value="{{j}}" (change)="onSelectOption($event,p)"/><p>
+                {{opt}}
+              </p>
+            </div>
+            <div style="display:flex;float:left;margin-top:3%;margin-bottom:4%">
+            <button class="form-control" style="background-color:green;color:white" *ngIf="quest.verified">Approved</button>
+            <button class="success form-control" (click)="ApproveQuestion(quest,p)" *ngIf="!quest.verified">Approve</button>
+            <button class="danger form-control" (click)="removeQuestion(quest,p)">Decline</button>
+          </div>
+          <span style="color: red;font-weight: bold;font-size: large;position: relative;right: 20%;">{{approveError}}</span>
+        </div>
+          <div *ngIf="edit">
+            <span *ngIf="editError" style="color:red;font-weight:bold;font-size:large">{{editError}}</span>
+            <div>
+              <span (click)="closeEdit()" class="close-btn">X</span>
+            </div>
+            <label>Question</label>
+            <input type="text" class="form-control" width="30%" value="{{questionEdit}}" (blur)="onEditJson($event,'question')"/>
+            <label class="optlabel">Options:</label>
+            <br>
+            <div *ngIf="options.length==4">
+            <label>
+              Option A
+            </label>
+            <input type="text" class="form-control" value="{{options[0]}}" (blur)="onEditJson($event,'opt1')" />
+
+            <label>
+              Option B
+            </label>
+            <input type="text" class="form-control" value="{{options[1]}}" (blur)="onEditJson($event,'opt2')"  />
+            <label>
+              Option C
+            </label>
+            <input type="text" class="form-control" value="{{options[2]}}" (blur)="onEditJson($event,'opt3')"  />
+            <label>
+              Option D
+            </label>
+            <input type="text" class="form-control" value="{{options[3]}}" (blur)="onEditJson($event,'opt4')"  />
+          </div>
+          <div *ngIf="options.length!=4">
+            <label>
+              Option A
+            </label>
+            <div class="row">
+            <select class="form-control col-lg-6" (change)="ChangeOptType($event,'optA')">
+              <option value="">Select Option Type</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+            </select>
+            <input  *ngIf="optTypeA=='text'" placeholder="Type Option A" type="text" class="form-control col-lg-6" value="{{options[0]}}" (blur)="onEditJson($event,'opt1')" />
+            <input   *ngIf="optTypeA=='image'" accept="image/*" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt1')"/>
+          </div>
+            <label>
+              Option B
+            </label>
+            <div class="row">
+            <select class="form-control col-lg-6" (change)="ChangeOptType($event,'optB')">
+              <option value="">Select Option Type</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+            </select>
+            <input  *ngIf="optTypeB=='text'" placeholder="Type Option B" type="text" class="form-control col-lg-6" value="{{options[1]}}" (blur)="onEditJson($event,'opt2')" />
+            <input accept="image/*"  *ngIf="optTypeB=='image'" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt2')"/>
+          </div>
+            <label>
+              Option C
+            </label>
+            <div class="row">
+            <select class="form-control col-lg-6" (change)="ChangeOptType($event,'optC')">
+              <option value="">Select Option Type</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+            </select>
+            <input  *ngIf="optTypeC=='text'" placeholder="Type Option C" type="text" class="form-control col-lg-6" value="{{options[2]}}" (blur)="onEditJson($event,'opt3')" />
+            <input  accept="image/*" *ngIf="optTypeC=='image'" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt3')"/>
+          </div>
+            <label>
+              Option D
+            </label>
+            <div class="row">
+            <select class="form-control col-lg-6" (change)="ChangeOptType($event,'optD')">
+              <option value="">Select Option Type</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+            </select>
+            <input *ngIf="optTypeD=='text'" placeholder="Type Option D" type="text" class="form-control col-lg-6" value="{{options[3]}}" (blur)="onEditJson($event,'opt4')" />
+            <input accept="image/*"  *ngIf="optTypeD=='image'" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt4')"/>
+          </div>
+          </div>
+          <div>
+            <label>
+              Image
+            </label>
+            <input type="file" class="form-control" accept="image/*"/>
+          </div>
+          <button  class="form-control success" style="margin-top:3%" (click)="submitEdit()" *ngIf="p==questionList.length">Submit</button>
+            
+          </div>
+          <div>
+            <button *ngIf="step=='verifyQs' && p==questionList.length" class="form-control success" style="width: 50%;margin: auto;position: relative;top: 100px;margin-right: 27%;" (click)="UploadEdited()">
+              Submit
+            </button>
+          </div>
+        </div>
+        
+        <!-- </div> -->
+    </mat-card-content>
+
+    <!-- <div class="col-lg-6">
+      <pdf-viewer [src]="pdfSrc"  [render-text]="true"></pdf-viewer>
+
+    </div> -->
+    <pagination-controls *ngIf="!edit && step=='verifyQs'" style="margin: auto;margin-bottom: 3%;margin-top: 10%;" previousLabel="" nextLabel="" (pageChange)="p=$event">
+
+    </pagination-controls>
+  </mat-card>
+
+  <span style="color:red">{{NetworkError}}</span>
+  

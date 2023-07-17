@@ -18,6 +18,7 @@ import {
 import { FileUploadService } from 'src/app/services/FileService/file.upload.service';
 import {Inject} from '@angular/core'
 import { DOCUMENT } from '@angular/common';
+import { RestapiServiceService } from 'src/app/services/restapi.service.service';
 interface month {
   value: string;
   viewValue: string;
@@ -205,7 +206,8 @@ export class AppDashboardComponent {
 
   constructor(
     private fileUploadService:FileUploadService,
-    @Inject(DOCUMENT) private document:any
+    @Inject(DOCUMENT) private document:any,
+    private restApi:RestapiServiceService
   ) {
     // sales overview chart
     this.salesOverviewChart = {
@@ -390,33 +392,40 @@ export class AppDashboardComponent {
   loader:boolean=false
   DS_description:any
   uploadError:any
+  uploadedfileName:any
   OnChangeUpload(e:any){
     console.log(e)
     console.log(e.target.files[0])
     this.file = e.target.files[0]
+    this.uploadedfileName = e.target.files[0].name
     console.log("file upload clicked")
     this.loader=true
     try{
     this.fileUploadService.upload(this.file).subscribe((event:any)=>{
       this.loader=false
       console.log(event)
-      if(typeof(event)=="object"){''
-        this.shortLink = event.link
-        console.log(this.shortLink)
-        this.uploadError=''
+      if(event.Status){
+        this.shortLink = event.data
       }else{
         this.loader=false
-        this.uploadError = "Error Uploading files"
+        this.dsError=event.message
       }
     })
     }catch(e:any){
       this.loader = false
-      this.uploadError = e
+      this.dsError = e
     }
   }
   shortLink:any
   UploadFile(){
+    if(this.shortLink==null || this.shortLink==undefined|| this.shortLink==''){
+      this.dsError = "Upload Files cannot be empty!!"
+    }else{
+this.dsError = ""
+    
   this.openModal('questionModal')
+  this.getExamList()
+    }
   }
 
 
@@ -427,5 +436,148 @@ export class AppDashboardComponent {
   closeModal(modalId:any){
     var modalClose = this.document.getElementById(modalId)
     modalClose.style.display="none"
+  }
+examList:any
+  getExamList(){
+    // this.loader=true
+    this.restApi.getExamList(JSON.parse(String(sessionStorage.getItem("UserDetails"))).Organization.CountryCode.id).subscribe((res:any)=>{
+      // this.loader=false
+      if (res.Success){
+        this.examList = res.data
+      }else{
+        let nodata={
+          "ExamName":"No Exams Found",
+          "ExamDescription":"",
+          "class":[]
+        }
+        this.examList = [nodata]
+      }
+    })
+  }
+  dsError:any
+validateupload(){
+  let validate=false
+  if(this.shortLink==null|| this.shortLink==undefined){
+    this.dsError = "Please upload a valid file"
+  }else if(this.examselect == undefined || this.examselect == ''){
+    this.uploadError = "Please Select Exam"
+  }else if(this.dsType == undefined || this.dsType==''){
+    this.uploadError = "Please select Type of datasource"
+  }else if(this.dsType!='mock_test' &&( this.qtype == undefined || this.qtype == '')){
+    this.uploadError ="Please select Type of Questions in the Uploded data source"
+  }else if(this.dsFormat == undefined || this.dsFormat == ''){
+    this.uploadError = "Please select Format of data source"
+  }
+  else{
+    this.uploadError=''
+    validate=true
+  }
+  return validate
+}
+
+examId:any
+examSubMap:any
+  OnSubmitDS(){
+   let validateDatasource = this.validateupload()
+   if(validateDatasource){
+     this.examId = JSON.parse(this.examselect).id
+     this.loader=true
+    this.restApi.getExamSubMap(this.examId).subscribe((res:any)=>{
+      console.log(res)
+      this.loader=false
+      if(res.Status){
+this.examSubMap = res.data
+      }
+      let final_submit_upload={
+        "ExamSubId":this.examSubMap,
+        "dataSourceType":this.dsFormat,
+        "datasourceName":this.shortLink.split('/')[this.shortLink.split('/').length-1],
+        "fileurl":this.shortLink,
+        "uploadedBy":JSON.parse(String(sessionStorage.getItem('UserDetails'))).id
+      }
+      this.loader=true
+      this.restApi.parseDSOEP(final_submit_upload).subscribe((resupload:any)=>{
+        console.log(resupload)
+        this.loader=false
+        // "Status":True,"data":json.dump({"oep_ds":oep_ds_doc.id,"parse_ds":{"Status":True,"data":parsed_ds_doc.id,"message":"Success"}}),"message":"Sucess"
+        // "ExamId":"",
+        // "datasourceId":"",
+        // "datasourceType":"",
+        // "parsedDatasourceId":""
+        // {"Status":True,"data":oep_ds_doc.id,"message":"Sucess"}
+        if (resupload.Status){
+          let filetype = this.dsFormat
+          let fileurl = this.shortLink
+          this.loader=true
+          // "StartPage":this.startPage,
+          // "endPage":this.endPage
+
+          this.restApi.parsepdf(fileurl,filetype,this.startPage,this.endPage).subscribe((resparse:any)=>{
+            this.loader=false
+            console.log(resparse)
+            // {"Status":True,"data":parsed_ds_master.id,"message":"Success"}
+            if (resparse.Status){
+              let final_submit_return = resupload
+              var DsTypeMap ={
+                "ExamId":this.examId,
+                "datasourceId":final_submit_return.data,
+                "datasourceType":this.dsType,
+                "parsedDatasourceId":resparse.data
+              }
+              this.loader=true
+              this.restApi.PostDsTypeMap(DsTypeMap).subscribe((resdsType:any)=>{
+                this.loader=false
+                console.log(resdsType)
+                if(resdsType.Status){
+                  alert(resdsType.message)
+                }else{
+                  alert(resdsType.message)
+                }
+              })
+            }
+          })
+         
+        }
+      })
+    })
+    //call upload module and parsing logic
+    // let OEP_DS_data = {
+    //   "ExamSubMapId"
+    // }
+    // this.restApi.parseDSOEP()
+   }
+  }
+dsType:any
+examselect:any
+qtype:any
+dsFormat:any
+  Onselectopt(e:any){
+    console.log(e)
+    if(e.target.id == "dsType"){
+      console.log(e.target.selectedOptions[0].value)
+      this.dsType = e.target.selectedOptions[0].value
+    }
+    else if(e.target.id == "examselect"){
+      this.examselect = e.target.selectedOptions[0].value
+    }else if(e.target.id=="qtype"){
+      this.qtype =  e.target.selectedOptions[0].value 
+    }else if(e.target.id == "dsFormat"){
+      this.dsFormat = e.target.selectedOptions[0].value 
+    }
+    console.log(this.dsType,this.dsFormat,this.qtype,this.examselect)
+  }
+
+  formatJSONToString(jsonObj:any){
+    return JSON.stringify(jsonObj)
+  }
+  startPage:any
+  endPage:any
+  OnInsertStartPage(e:any,field:any){
+    if (field=='startpage'){
+      this.startPage = e.target.value
+    }
+    if (field == 'endpage'){
+      this.endPage = e.target.value
+    }
   }
 }

@@ -17,6 +17,11 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { CurateDashComponent } from './curate/curate-dash/curate-dash.component';
 import { QuestionConfigComponent } from './curate/question-config/question-config.component';
 import { ExamConfigurationComponent } from './Exam-dash/ExamConfigurationDetails/exam-configurationdetails.component';
+import { WorkComponent } from './work/work.component';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 
 @NgModule({
   imports: [
@@ -26,7 +31,12 @@ import { ExamConfigurationComponent } from './Exam-dash/ExamConfigurationDetails
     FormsModule,
     ReactiveFormsModule,
     TablerIconsModule.pick(TablerIcons),
-    MatTabsModule
+    MatTabsModule,
+    MatPaginatorModule,
+    NgxPaginationModule,
+    PdfViewerModule,
+    AngularFireStorageModule
+    
   ],
   declarations: [
     AppIconsComponent,
@@ -36,6 +46,7 @@ import { ExamConfigurationComponent } from './Exam-dash/ExamConfigurationDetails
     CurateDashComponent,
     QuestionConfigComponent,
     ExamConfigurationComponent,
+    WorkComponent
   ],
   schemas:[CUSTOM_ELEMENTS_SCHEMA,NO_ERRORS_SCHEMA]
 

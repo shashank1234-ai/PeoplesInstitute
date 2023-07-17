@@ -29,7 +29,7 @@ const routes: Routes = [
         path: 'oep',
         loadChildren: () =>
           import('./pages/extra/extra.module').then((m) => m.ExtraModule),
-      },
+      }
     ],
   },
   {

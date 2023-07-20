@@ -11,6 +11,7 @@ export const environment={
     },
     // apiUrl:"http://127.0.0.1:4000/",
     apiUrl:"https://4c28-3-110-90-131.ngrok-free.app/",
+    // apiUrl:"http://ec2-3-110-90-131.ap-south-1.compute.amazonaws.com:8000/",
     STORAGE_PATH :'people-s-institue.appspot.com'
 
 }

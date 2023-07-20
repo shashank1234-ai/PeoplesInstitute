@@ -1,3 +1,4 @@
+import { JsonpInterceptor } from '@angular/common/http';
 import { Component,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RestapiServiceService } from 'src/app/services/restapi.service.service';
@@ -66,7 +67,8 @@ FormattedExamLists:any=[]
 
    ExamConfiguration(examData:any){
     console.log(examData)
-    this.router.navigate(['/oep/exam-dashboard/'+examData.ExamName])
+    sessionStorage.setItem('ExamEdit',JSON.stringify(examData))
+    this.router.navigate(['/oep/exam-dashboard/'+examData.id])
 
    }
 

@@ -306,8 +306,6 @@
         border-radius: 5px;
         height: 100px;
         align-items: center;
-        position: absolute;
-        bottom: 26%;
     }
     
     .align{
@@ -433,15 +431,4 @@
         background-color: rgb(104, 104, 197);
         color:white;
         cursor: pointer;
-      }
-      #drag_zone{
-        width:100%;
-        height: 200px;
-        margin: auto;
-        padding: 8px;
-        text-align: center;
-        background-color: #f0f0f0;
-        border: 2px dashed gray;
-        border-radius: 8px;
-        color: rgb(114, 110, 110);
       }

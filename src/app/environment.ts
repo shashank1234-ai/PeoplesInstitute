@@ -9,7 +9,8 @@ export const environment={
   appId: "1:963672762213:web:d6f6ac614abb074772238c",
   measurementId: "G-QVHBYKDY1B"
     },
-    apiUrl:"http://127.0.0.1:3000/",
+    // apiUrl:"http://127.0.0.1:4000/",
+    apiUrl:"https://4c28-3-110-90-131.ngrok-free.app/",
     STORAGE_PATH :'people-s-institue.appspot.com'
 
 }

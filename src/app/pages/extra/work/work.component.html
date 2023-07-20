@@ -38,7 +38,7 @@
       </div>
     </mat-card-content>
     <mat-card-content class="b-t-1 col-lg-12" *ngIf="step=='verifyQs'">
-      <div *ngIf="!edit" (click)="BackToListing()" style="float: right;position: absolute;right: -145px;">
+      <div *ngIf="!edit" (click)="BackToListing()" style="float: right;position: absolute;right: -145px;cursor: pointer;">
         <img src="../../../../assets/images/icons/arrow-left.png" style="width:10%"/>
         <span>Back</span>
       </div>
@@ -60,7 +60,7 @@
             <div *ngIf="quest.image!=undefined">
                 <label>Image:</label>
                 <!-- <span>{{basedecode(quest.image)}}</span> -->
-                <img src="{{basedecode(quest.image)}}" class="form-control" />
+                <img [src]="basedecode(quest.image)" />
             </div>
             <div *ngFor="let opt of quest.options;let j= index">
               <!-- <li >{{opt}}</li>-->
@@ -157,9 +157,9 @@
             <label>
               Image
             </label>
-            <input type="file" class="form-control" accept="image/*"/>
+            <input type="file" class="form-control" accept="image/*" (change)="uploadImageToQuestion($event,p)"/>
           </div>
-          <button  class="form-control success" style="margin-top:3%" (click)="submitEdit()" *ngIf="p==questionList.length">Submit</button>
+          <button  class="form-control success" style="margin-top:3%" (click)="submitEdit()" *ngIf="edit">Submit</button>
             
           </div>
           <div>

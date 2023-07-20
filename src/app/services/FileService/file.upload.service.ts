@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import {Observable} from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/app/environment';
-import { Exception } from 'sass';
-
+import * as JSZip from 'jszip';
 @Injectable({
   providedIn: 'root'
 })
@@ -63,4 +61,24 @@ handleReaderLoaded(e:any){
   createDatasourceMaster(body:any){
     
   }
+
+
+  uploadZipfile(files:File){
+    const formData = new FormData();
+    formData.append('pdf',files as Blob)
+    return this.http.post(environment.apiUrl+'Upload/UploadZIPFiles',formData)
+  }
+
+  // getFileUploadStatus(file:any){
+  //   // fetch the file status on upload
+  //   let headers = new HttpHeaders({
+  //     "size": file.selectedFile.size.toString(),
+  //     "x-file-id": file.fileId,
+  //     'name': file.fileName
+  //   });
+
+  //  return this.http
+  //     .get("http://localhost:3000/status", { headers: headers })
+  // }
+
 }

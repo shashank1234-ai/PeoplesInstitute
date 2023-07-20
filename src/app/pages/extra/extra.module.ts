@@ -22,7 +22,6 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
-
 @NgModule({
   imports: [
     CommonModule,

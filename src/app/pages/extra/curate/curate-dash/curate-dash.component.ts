@@ -1,31 +1,22 @@
 import { Component,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { RestapiServiceService } from 'src/app/services/restapi.service.service';
 @Component({
     selector:'app-curate-dash',
-    templateUrl:'./curate-dash.component.html'
+    templateUrl:'./curate-dash.component.html',
+    styleUrls:['./curate-dash.component.scss']
 })
 
 export class CurateDashComponent implements OnInit {
     
     constructor(
-        private router:Router
+        private router:Router,
+        private restApi:RestapiServiceService
     ){
     }
-    ExamList:any=['Engnineering','Medical','Railways','Banking','CPT','Postal','Medical PG','Others']
-    ExamList1:any=[]
-    ExamList2:any=[]
-    ExamList3:any=[]
+    
     ngOnInit(): void {
-        for(let i=0;i<this.ExamList.length;i++){
-            if(i%3==0){
-                this.ExamList3.push(this.ExamList[i])
-            }else if(i%3==1){
-                this.ExamList2.push(this.ExamList[i])
-            }else if(i%3==2){
-                this.ExamList1.push(this.ExamList[i])
-            }
-        }
-        console.log(this.ExamList1,this.ExamList2,this.ExamList3)
+       this.getExamList()
     }
 
     
@@ -39,4 +30,47 @@ export class CurateDashComponent implements OnInit {
         this.router.navigate(['/oep/Questions/:'+examName])
 
     }
+
+    ExamList:any=[]
+loader:boolean=false
+ExamListError:any
+FormattedExamLists:any=[]
+   getExamList(){
+    this.loader=true
+    var countryId = JSON.parse(String(sessionStorage.getItem("UserDetails"))).Organization.CountryCode.id
+    this.restApi.getExamList(countryId).subscribe((res:any)=>{
+        console.log(res)
+        this.loader=false
+        if (res.Success){
+            this.ExamList = res.data
+            let formatData:any=[]
+
+            for(let i=0;i<this.ExamList.length;i++){
+                if (i%3==0 && i!=0){
+                    formatData.push(this.ExamList[i])
+                    this.FormattedExamLists.push(formatData)
+                    formatData=[]
+                    // formatData.push(this.ExamList[i])
+                    
+                }else if(this.ExamList.length<=4 && formatData.length==this.ExamList.length-1){
+                    formatData.push(this.ExamList[i])
+                    this.FormattedExamLists.push(formatData)
+                    formatData=[]
+                }
+                else{
+                    formatData.push(this.ExamList[i])
+                }
+
+            }
+            if (formatData.length!=0 && formatData.length<4){
+                this.FormattedExamLists.push(formatData)
+                formatData=[]
+            }
+            console.log(this.FormattedExamLists)
+        }else{
+            this.ExamListError = res.Message
+        }
+    })
+
+   }
 }

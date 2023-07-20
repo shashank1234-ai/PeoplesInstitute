@@ -47,6 +47,7 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
            let completeNo = 0
             // if (localStorage.getItem(this.myWorkData[i].parseDsId)==null){
               console.log(JSON.parse(this.myWorkData[i].ParsedDatasource).length,'length')
+              console.log(this.myWorkData[i].parseDsId)
               if (localStorage.getItem(this.myWorkData[i].parseDsId)!=undefined || localStorage.getItem(this.myWorkData[i].parseDsId)!=null){
                  workData = JSON.parse(String(localStorage.getItem(this.myWorkData[i].parseDsId)))
               }else{
@@ -94,6 +95,14 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
             }
           }
           this.questionList = updateQList
+          updateQList=[]
+          for (let i=0;i<this.questionList.length;i++){
+            if(this.questionList[i]['Question'].length>0){
+              updateQList.push(this.questionList[i])
+            }
+          }
+          this.questionList = updateQList
+          console.log(this.questionList.length)
           this.parseDsId = workObj.ParsedDatasource
 
         }
@@ -124,12 +133,14 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
     basedecode(base64image:any){
       this.image=''
       // var image = new Image()
-      let imageString = "data:image/png;base64," +base64image
+      // let imageString = "data:image/png;base64," +base64image
       // image.src = "data:image/png;base64," +base64image
-      this.image = this.sanitizer.bypassSecurityTrustResourceUrl(imageString)
+      this.image = this.sanitizer.bypassSecurityTrustResourceUrl(base64image)
       console.log(this.image)
       return this.image
     }
+
+
     downloadPfd(){
       window.open(
         this.pdfSrc
@@ -162,6 +173,8 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
     }
 
 closeEdit(){
+  localStorage.removeItem(this.parseDsId)
+  localStorage.setItem(this.parseDsId,this.questionList)
   this.edit=false
   this.questionEdit=''
   this.options=[]
@@ -192,6 +205,12 @@ submitEdit(){
       this.questionList[this.editIdx-1]['options'] = this.options
     }
     this.questionList[this.editIdx-1]['question'] = this.questionEdit
+    if(this.base64String!=undefined || this.base64String!=null || this.base64String!=''){
+
+    
+    this.questionList[this.editIdx-1]['image'] = this.base64String
+  this.base64String=''  
+  }
     console.log(this.questionList[this.editIdx-1])
     this.closeEdit()
   }
@@ -279,6 +298,20 @@ ApproveQuestion(quest:any,ids:any){
     localStorage.setItem(this.parseDsId,JSON.stringify(this.questionList))
 
   }
- 
+  
+}
+base64String:any
+uploadImageToQuestion(e:any,p:any){
+    console.log(e.target.files[0],p)
+    console.log(this.questionList[p])
+    this.fileService.convertToBase64(e.target.files[0]).then((res:any)=>{
+      console.log(res)
+      this.base64String = res
+      this.questionList[p]['image'] = this.base64String
+      console.log(this.questionList[p])
+    }).catch((res:any)=>{
+      this.questionList[p]['image']=''
+    })
+   
 }
   }

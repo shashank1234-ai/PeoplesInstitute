@@ -6,7 +6,7 @@
   </mat-card-header> -->
   <mat-card-content class="b-t-1">
     <h1>Curate Questions</h1>
-    <div class="row">
+    <!-- <div class="row">
       
       
 
@@ -58,6 +58,31 @@
               </button>
               </div>
             </div>
+            <br>
+            
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div> -->
+    <div class="row">
+        
+        
+  
+      <div class="col-12">
+        <mat-card class="b-1 shadow-none">
+          <mat-card-content class="b-t-1">
+            <div *ngFor="let examlist of FormattedExamLists;let i= index">
+            <div class="row">
+            <div *ngFor="let exam of examlist;let j=index" class="col-sm-3">
+              <button mat-flat-button [ngClass]="{'color-primary':j%3==1,'color-accent':j%3==2,'color-warn':j%3==0}"  class="w-100">
+                {{exam.ExamName}}
+              </button>
+          </div>
+            </div>
+            <br>
+          </div>
+            <br>
+           
             <br>
             
           </mat-card-content>

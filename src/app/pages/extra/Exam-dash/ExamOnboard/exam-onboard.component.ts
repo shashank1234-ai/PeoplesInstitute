@@ -28,12 +28,12 @@ export class ExamOnboardComponent implements OnInit {
    ){
 
    }
- ngOnInit(): void {
+ ngOnInit(){
     this.touchedRows = [];
     this.SectionTable = this.fb.group({
       tableRows: this.fb.array([])
     });
-    this.addRow();
+    // this.addRow();
     this.getSubjects();
  }
 
@@ -47,10 +47,15 @@ export class ExamOnboardComponent implements OnInit {
       isEditable: [true]
     });
   }
-  addRow() {
-    const control =  this.SectionTable.get('tableRows') as FormArray;
-    control.push(this.initiateForm());
+  SubjectList:any=[]
+  subjects:any
+  addRow(idx:any) {
+    if(this.SubjectList.length!=this.subjects.length){
+    for (let i=0;i<this.SubjectList.length;i++){
+        this.subjects.push([])
+    }
   }
+}
 
   deleteRow(index: number) {
     const control =  this.SectionTable.get('tableRows') as FormArray;
@@ -61,11 +66,15 @@ export class ExamOnboardComponent implements OnInit {
     group.get('isEditable')?.setValue(true);
   }
 
-  doneRow(group: any) {
+  doneRow(group: any,tble:any) {
     group.get('isEditable')?.setValue(false);
-    this.addRow();
-  }
+    let tablebody = this.document.getElementsByClassName('tablediv'+tble)
+    console.log(tablebody)
+    this.addRow(tble);
 
+    // console.log(group)
+    // console.log(tble)
+  }
   savesectionDetails() {
     console.log(this.SectionTable.value);
   }
@@ -81,9 +90,7 @@ export class ExamOnboardComponent implements OnInit {
     console.log(this.touchedRows);
   }
   loader:boolean=false
-SubjectList:any=[
-    
-]
+
 SubjectSection:any=[]
 ExamName:any=""
 Examlevel:any=""
@@ -172,7 +179,6 @@ SubjectConfiguration(){
     }
   }
   subjectName:any
-  subjectList:any=[]
   ExamSubectMappingId:any
   AddSubjects(){
     console.log(this.subjectCode,this.SubjectDescription,this.subjectName)
@@ -205,6 +211,7 @@ this.closeModal('questionModal')
     })
     
   }
+  subjectList:any
   formattedSubject:any=[]
   getSubjects(){
     this.loader=true
@@ -251,6 +258,7 @@ this.closeModal('questionModal')
         this.createSubMessage = res.Message
       }
     })
+    this.getSubjects()
     console.log(this.SubjectCode)
   }
   
@@ -264,5 +272,36 @@ this.closeModal('questionModal')
       }
     })
   }
+  subjectSectionMapping:any={}
+  selectedfiles:any
+  uploadFile(e:any){
+    // this.subjects['files'] = e.target.files[0]
+    this.selectedfiles = Object.values(e.target.files)
+  this.subjectSectionMapping['files'] = e.target.files
+    console.log(this.subjects)  
+}
+
+OnSelectSectionType(e:any,sub:any,sec:any){
+  console.log(e.value,sub,sec)
+}
+onChangeNoOfQ(e:any,sub:any,sec:any){
+  console.log(e.target.value,sub,sec)
+}
+removeRow(index: number,idxi:any) {
+  this.subjects[index].splice(idxi, 1);
+
+}
+
+subjectSectionError:any=''
+deleteFile(file:any,idx:any){
+  console.log(file)
+  // console.log(this.selectedfiles.indexOf(file))
+  console.log(typeof(this.selectedfiles))
+  this.selectedfiles.splice(idx,1)
+  // this.selectedfiles = this.selectedfiles.filter((ele:any)=>{
+  //   return ele ? ele!=file:''
+  // })
+  console.log(this.selectedfiles)
+}
 }
 // "rLV9JbgpnS7eTK5suynY"

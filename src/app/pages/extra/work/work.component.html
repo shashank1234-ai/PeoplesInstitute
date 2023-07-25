@@ -18,23 +18,68 @@
         <div class="col-12">
           <mat-card class="b-1 shadow-none">
             <mat-card-header>
-              <!-- <mat-card-title>List with sections</mat-card-title> -->
+              <mat-card-title>DataSource Upload</mat-card-title>
             </mat-card-header>
-            <!-- <mat-card-content class="b-t-1"> -->
               <mat-list>
-                <!-- <div mat-subheader class="mat-body-2 m-y-16 f-w-600">Notes</div> -->
                 <mat-list-item *ngFor="let work of myWorkData">
                   <mat-icon matListItemIcon>note</mat-icon>
                   <div matListItemTitle class="mat-body-2 f-w-600">{{ work.filename }}</div>
                   <div matListItemLine class="f-s-14 mat-body-1">{{ work.fileurl }}</div>
-                  <div matListItemLine class="f-s-14 mat-body-1" style="color:green;font-size:large;font-weight:bolder">{{work.completePercentage}}% Complete <a style="color:blue;text-decoration: underline;cursor:pointer" *ngIf="work.completePercentage==0" (click)="startVerify(work,'new')">Start</a>
+                  <div matListItemLine class="f-s-14 mat-body-1" style="color:green;font-size:large;font-weight:bolder">{{work.completePercentage}}% Complete 
+                    <a style="color:blue;text-decoration: underline;cursor:pointer" *ngIf="work.completePercentage==0" (click)="startVerify(work,'new')">Start</a>
                     <a style="color:blue;text-decoration: underline;cursor: pointer;" *ngIf="work.completePercentage!=0" (click)="startVerify(work,'continue')">Continue</a>
                 </div>
                 </mat-list-item>
               </mat-list>
-            <!-- </mat-card-content> -->
+           
           </mat-card>
-        </div>
+          </div>
+         
+      </div>
+      <div class="col-12">
+        <mat-card class="b-1 shadow-none">
+         <mat-card-header>
+            <mat-card-title>Exam Section Configuration Upload</mat-card-title>
+          </mat-card-header>
+
+            <!-- <mat-list>
+              <mat-list-item *ngFor="let work of myWorkData">
+                <mat-icon matListItemIcon>note</mat-icon>
+                <div matListItemTitle class="mat-body-2 f-w-600">{{ work.filename }}</div>
+                <div matListItemLine class="f-s-14 mat-body-1">{{ work.fileurl }}</div>
+                <div matListItemLine class="f-s-14 mat-body-1" style="color:green;font-size:large;font-weight:bolder">{{work.completePercentage}}% Complete 
+                  <a style="color:blue;text-decoration: underline;cursor:pointer" *ngIf="work.completePercentage==0" (click)="startVerify(work,'new')">Start</a>
+                  <a style="color:blue;text-decoration: underline;cursor: pointer;" *ngIf="work.completePercentage!=0" (click)="startVerify(work,'continue')">Continue</a>
+              </div>
+              </mat-list-item>
+            </mat-list> -->
+            <mat-expansion-panel *ngFor="let examConfig of ExamConfigurationData;let i = index">
+              <mat-expansion-panel-header>
+                <mat-panel-title style="font-size: 1rem;">{{examConfig.ExamData.ExamName}}</mat-panel-title>
+              </mat-expansion-panel-header>
+              <mat-panel-description>
+                Data Source for {{examConfig.ExamData.ExamDescription}}
+              </mat-panel-description>
+              <div>
+                <table>
+                  <thead>
+                    <th>File Url</th>
+                    <th>Status</th>
+                    <th>% Complete</th>
+                    <th>Action</th>
+                  </thead>
+                  <tbody *ngFor="let data_source of examConfig.DataSource">
+                    <td>{{data_source.file_url}}</td>
+                    <td>{{data_source.verified?"Verified":"In Process"}}</td>
+                    <td>{{data_source.ParsedDS.CompletePer}}</td>
+                    <td>
+                      <button mat-button class="primary" (click)="startVerifyDSConfig(data_source)">Verify</button>
+                    </td>
+                  </tbody>
+              </table>
+              </div>
+            </mat-expansion-panel>
+          </mat-card>
       </div>
     </mat-card-content>
     <mat-card-content class="b-t-1 col-lg-12" *ngIf="step=='verifyQs'">

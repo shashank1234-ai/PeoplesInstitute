@@ -63,10 +63,12 @@ handleReaderLoaded(e:any){
   }
 
 
-  uploadZipfile(files:File){
+  uploadMultipleFiles(files:File[]){
     const formData = new FormData();
-    formData.append('pdf',files as Blob)
-    return this.http.post(environment.apiUrl+'Upload/UploadZIPFiles',formData)
+    for(const file in files){
+      formData.append('files[]',file as any as Blob)
+    }
+    return this.http.post(environment.apiUrl+'Upload/UploadMultipleFiles',formData)
   }
 
   // getFileUploadStatus(file:any){

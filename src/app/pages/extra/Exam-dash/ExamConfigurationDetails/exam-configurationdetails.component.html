@@ -22,12 +22,7 @@
       Enter Classes that give the exam comma seperated (eg:11,12,12+)
     </p>
     </div>
-    <!-- <button class="primary col-sm-3" mat-flat-button color="primary"  style="margin-top: 2%;" (click)="createExam()">
-        Create
-      </button>  -->
     </div>
-    <!-- <p style="color:rgb(128, 113, 0);">{{ExamCreateMessage}}</p> -->
-    <!-- <div *ngIf="Examcreate"> -->
     <div>
       <a style="cursor: pointer;" (click)="openModal('questionModal')">
         <img src="../../../../../assets/images/icons/circle-plus.png" class="add-btn" alt="add new subject"/>
@@ -67,7 +62,6 @@
         </div>
     </tbody>
       </table>
-      <!-- </div> -->
       <div class="modal" id="questionModal">
         <article class="modal-container">
             <header class="modal-container-header">
@@ -81,6 +75,7 @@
                         <path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                     </svg>
                 </button>
+              
             </header>
             <section class="modal-container-body rtf">
                 <div class="row">
@@ -116,6 +111,7 @@
         <img class="back-arrow" src="../../../../../assets/images/icons/arrow-left.png"/>
         <span>Back</span>
     </div>
+
     <mat-expansion-panel *ngFor="let subject of SubjectList;let j=index">
         <mat-expansion-panel-header>
           <mat-panel-title style="font-weight: bolder;">
@@ -126,52 +122,6 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
         <div style="margin-bottom:3%">
-              <!-- <form [formGroup]="SectionTable" style="height: max-content;">
-              <table class="table table-border">
-                <thead class="text-nowrap">
-                  <th>Section Type <span class="ui-column-resizer" dragableColumn> </span></th>
-                  <th>No of questions<span class="ui-column-resizer" dragableColumn> </span></th>
-                  <th>Action<span class="ui-column-resizer" dragableColumn> </span></th>
-                  <th></th>
-                </thead>
-                <tbody>
-                  <ng-container formArrayName="tableRows" *ngFor="let group of getFormControls.controls ; let i=index">
-                    <tr *ngIf="group.get('isEditable')?.value" [formGroupName]="i">
-                      <td>
-                        <mat-form-field>
-                          <mat-select formControlName="sectionType" (selectionChange)="OnSelectSectionType($event,i,j)">
-                            <mat-option value="MCQ (Single Correct)">MCQs(Single Correct)</mat-option>
-                            <mat-option value="MCQ (Multi Correct)">MCQ(Multi Correct)</mat-option>
-                            <mat-option value="Subjective">Subjective</mat-option>
-                            <mat-option value="Reasoning">Reasoning</mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                      </td>
-                      <td>
-                        <mat-form-field>
-                          <input matInput type="text" formControlName="NoOfQs" (blur)="onChangeNoOfQ($event,i,j)" />
-                        </mat-form-field>
-                      </td>
-                      <td>
-                        <mat-icon class="delete" (click)="deleteRow(i,j)">delete_forever</mat-icon>
-                        <mat-icon class="done" (click)="doneRow(group,j)">done</mat-icon>
-                      </td>
-                    </tr>
-                    <tr *ngIf="!group.get('isEditable')?.value" >
-                      <td>
-                        {{group.get('sectionType')?.value}}
-                      </td>
-                      <td>
-                        {{group.get('NoOfQs')?.value}}
-                      </td>
-                      <td>
-                        <mat-icon class="edit" (click)="editRow(group)">edit</mat-icon>
-                      </td>
-                    </tr>
-                  </ng-container>
-                </tbody>
-              </table>
-              </form> -->
               <button mat-button (click)="addRow(j)" class="add-row-btn" style="border: 1px solid #616161;">Add Row +</button>
               <table>
                 <thead>
@@ -183,19 +133,16 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let subject of subjects[j]; let i = index">
-                    <!-- <td><input [(ngModel)]="subject.name" /></td> -->
                     <td>
                         <mat-select class="form-control" [(ngModel)]="subject.section" (selectionChange)="OnSelectSectionType($event,i,j)">
                             <mat-option value="" selected>Please Select</mat-option>
-                            <mat-option value="MCQ (Single Correct)">MCQs(Single Correct)</mat-option>
-                            <mat-option value="MCQ (Multi Correct)">MCQ(Multi Correct)</mat-option>
-                            <mat-option value="Subjective">Subjective</mat-option>
-                            <mat-option value="Reasoning">Reasoning</mat-option>
+                            <mat-option value="mcq_single">MCQs(Single Correct)</mat-option>
+                            <mat-option value="mcq_multi">MCQ(Multi Correct)</mat-option>
+                            <mat-option value="subjective">Subjective</mat-option>
+                            <mat-option value="reasoning">Reasoning</mat-option>
                           </mat-select>
                     </td>
-                    <!-- <td><input [(ngModel)]="subject.questionType" /></td> -->
                     <td>
-                        <!-- <input [(ngModel)]="subject.numQuestions" type="number" /> -->
                         <input class="form-control" type="text" [(ngModel)]="subject.numQuestions" (blur)="onChangeNoOfQ($event,i,j)" />
                     </td>
                     <td><mat-icon class="delete" (click)="removeRow(j,i)">delete_forever</mat-icon></td>
@@ -206,32 +153,41 @@
         </div>
         
       </mat-expansion-panel>
+
       <label class="align-upload-text upload-txt">
         Upload past 10 years Question papers*
     </label>
-    <div class="upload align-upload-text" style="height:400px">
-    
-    <!-- <input type="file" class="form-control align" multiple (change)="uploadFile($event)" /> -->
-    <div id="drag_zone" class="file-upload-wrapper">
+    <div class="align-upload-text">
+        <div id="drag_zone" class="file-upload-wrapper">
       Upload Files
       <input type="file" multiple (change)="uploadFile($event)"/>
+        <mat-list style="display: flex;">
+          <mat-list-item style="border: 1px solid #616161;border-radius: 10px;" *ngFor="let file of selectedfiles;let i=index">
+            <div mat-line>{{file.name}}</div>
+            <div>
+              <mat-icon style="cursor: pointer;" (click)="deleteFile(file,i)">delete</mat-icon>
+            </div>
+            <mat-divider></mat-divider>
+          </mat-list-item>
+        </mat-list>
     </div>
-    <mat-list style="display: flex;display: flex;position: absolute;bottom: 26%;">
-      <mat-list-item style="border: 1px solid #616161;border-radius: 10px;" *ngFor="let file of selectedfiles;let i=index" [class.upload-success]="file.uploadCompleted">
-        <!-- <mat-icon mat-list-icon>note</mat-icon> -->
-        <div mat-line>{{file.name}}</div>
-        <!-- <mat-progress-bar class="mr-4" mode="determinate" value="{{file.uploadedPercent}}"></mat-progress-bar> -->
-        <div>
-          <mat-icon style="cursor: pointer;" (click)="deleteFile(file,i)">delete</mat-icon>
-        </div>
-        <mat-divider></mat-divider>
-      </mat-list-item>
-    </mat-list>
 </div>
-    <p class="text-danger align-upload-text">*Please upload in .zip format</p>
+<h3 *ngIf="selectedfiles.length>0" style="margin-top:4%">Please select a template of uploaded PDF</h3>
+<div *ngIf="selectedfiles.length>0" style="display: flex;margin-top: 10%;">
+  <div style="display:flex;flex-direction: column;">
+    <span>Template 1</span>
+    <img src="../../../assets/images/templates/template1.png" style="width:75%" />
+    <input style="margin: top 3%;" type="radio" value="template1" (change)="OnSelectTemplate($event)"/>
+  </div>
+  <div style="display:flex;flex-direction: column;">
+    <span>Template 2</span>
+    <img style="width:75%;" src="../../../assets/images/templates/template2.png" />
+    <input type="radio" style="margin-top:3%"  value="template2" (change)="OnSelectTemplate($event)"/>
+  </div>
+</div>
     <p style="color:red;font-size:larger;font-weight:bold;margin-top:5%">{{subjectSectionError}}
-
     </p>
+    <p style="color:red;font-size:larger;font-weight:bold;margin-top:5%">{{uploadError}}</p>
       <div>
         <button class="col-sm-3 finish-btn" mat-flat-button color="primary" (click)="Submit()">Finish</button>
     </div>

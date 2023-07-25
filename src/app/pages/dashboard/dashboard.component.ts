@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, ViewEncapsulation, ViewChild,OnInit } from '@angular/core';
 import {
   ApexChart,
   ChartComponent,
@@ -19,6 +19,7 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
 import {Inject} from '@angular/core'
 import { DOCUMENT } from '@angular/common';
 import { RestapiServiceService } from 'src/app/services/restapi.service.service';
+
 interface month {
   value: string;
   viewValue: string;
@@ -124,7 +125,11 @@ const ELEMENT_DATA: productsData[] = [
   encapsulation: ViewEncapsulation.None,
   styleUrls:['./dashboard.component.scss']
 })
-export class AppDashboardComponent {
+export class AppDashboardComponent implements OnInit{
+
+  ngOnInit(): void {
+      this.get_TotalWork()
+  }
   @ViewChild('chart') chart: ChartComponent = Object.create(null);
 
   public salesOverviewChart!: Partial<salesOverviewChart> | any;
@@ -181,25 +186,25 @@ export class AppDashboardComponent {
     {
       id: 1,
       imgSrc: '/assets/images/products/Nigeria.png',
-      title: 'OEP Nigeria',
+      title: 'Nigeria',
       
     },
     {
       id: 2,
       imgSrc: '/assets/images/products/papanewguinea.png',
-      title: 'OEP Papa New Guinea',
+      title: 'Papa New Guinea',
      
     },
     {
       id: 3,
       imgSrc: '/assets/images/products/Uganda.png',
-      title: 'OEP Uganda',
+      title: 'Uganda',
      
     },
     {
       id: 4,
       imgSrc: '/assets/images/products/egypt.png',
-      title: 'OEP Egypt',
+      title: 'Egypt',
       
     },
   ];
@@ -207,7 +212,7 @@ export class AppDashboardComponent {
   constructor(
     private fileUploadService:FileUploadService,
     @Inject(DOCUMENT) private document:any,
-    private restApi:RestapiServiceService
+    private restApi:RestapiServiceService,
   ) {
     // sales overview chart
     this.salesOverviewChart = {
@@ -467,6 +472,12 @@ validateupload(){
     this.uploadError ="Please select Type of Questions in the Uploded data source"
   }else if(this.dsFormat == undefined || this.dsFormat == ''){
     this.uploadError = "Please select Format of data source"
+  }else if(this.templateSelected==undefined || this.templateSelected==null){
+    this.uploadError = "Please Select a template"
+  }else if(this.startPage==undefined || this.startPage==null || this.startPage==''){
+    this.uploadError = "Start Page is Empty"
+  }else if(this.endPage==undefined || this.endPage == null || this.endPage == ''){
+    this.uploadError = "End Page is Empty"
   }
   else{
     this.uploadError=''
@@ -509,10 +520,11 @@ this.examSubMap = res.data
           let filetype = this.dsFormat
           let fileurl = this.shortLink
           this.loader=true
+          let template = this.templateSelected
           // "StartPage":this.startPage,
           // "endPage":this.endPage
 
-          this.restApi.parsepdf(fileurl,filetype,this.startPage,this.endPage).subscribe((resparse:any)=>{
+          this.restApi.parsepdf(fileurl,filetype,this.startPage,this.endPage,this.templateSelected).subscribe((resparse:any)=>{
             this.loader=false
             console.log(resparse)
             // {"Status":True,"data":parsed_ds_master.id,"message":"Success"}
@@ -579,5 +591,30 @@ dsFormat:any
     if (field == 'endpage'){
       this.endPage = e.target.value
     }
+  }
+
+  get_TotalWork(){
+    let userId = JSON.parse(String(sessionStorage.getItem("UserDetails"))).id
+    this.loader=true
+    this.restApi.get_dash_analytics(userId).subscribe((res:any)=>{
+      this.loader=false
+      console.log(res)
+      this.yearlyChart.series=[JSON.parse(res.data).manualUpload,JSON.parse(res.data).ai_generated]
+    })
+  }
+  modalNext:any='configSelection'
+  Next(){
+  
+    this.modalNext = 'templateSelection'
+   
+  }
+
+  templateSelected:any
+  OnSelectTemplate(e:any){
+    console.log(e)
+    this.templateSelected = e.target.value
+  }
+  goBack(){
+    this.modalNext = 'configSelection'
   }
 }

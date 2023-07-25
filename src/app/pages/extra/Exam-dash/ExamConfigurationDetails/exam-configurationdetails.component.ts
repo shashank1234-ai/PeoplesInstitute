@@ -4,6 +4,8 @@ import { RestapiServiceService } from 'src/app/services/restapi.service.service'
 import { DOCUMENT } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FileUploadService } from 'src/app/services/FileService/file.upload.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/app/environment';
 @Component({
     selector:'app-exam-configuration',
     templateUrl:'./exam-configurationdetails.component.html',
@@ -26,7 +28,8 @@ export class ExamConfigurationComponent implements OnInit{
         private restApi:RestapiServiceService,
         private fb: FormBuilder,
         private router:Router,
-        private fileService:FileUploadService
+        private fileService:FileUploadService,
+        private http:HttpClient
 
     ){
         
@@ -42,7 +45,8 @@ export class ExamConfigurationComponent implements OnInit{
             this.subjects.push([])
         }
     }
-        let subjectsIdx = { section: '', numQuestions: 0 }
+    console.log(this.SubjectList,idx)
+        let subjectsIdx = { section: '', numQuestions: 0,SubjectId:this.SubjectList[idx]["subjectId"] }
         this.subjects[idx].push(subjectsIdx);
         console.log(this.subjects)
         // const control =  this.SectionTable.get('tableRows') as FormArray;
@@ -146,7 +150,7 @@ export class ExamConfigurationComponent implements OnInit{
         this.loader=true
         this.restApi.getSubjectsForExam(examId).subscribe((res:any)=>{
           console.log(res)
-        //   this.loader=false
+          this.loader=false
           if (res.Status){
             this.SubjectList = JSON.parse(res.data).Subjects
           }
@@ -226,7 +230,10 @@ subjectSectionError:any=''
     console.log(this.subjects)
     if(this.subjects.length!=this.SubjectList.length){
         this.subjectSectionError = "All Subjects are Not Configured"
-    }else if(
+    }else if(this.template == null || this.template == undefined){
+      this.subjectSectionError = "Please choose a Template"
+    }
+    else if(
       this.subjectSectionMapping['files']=='' || this.subjectSectionMapping['files']==null || this.subjectSectionMapping['files']==undefined
     ){
       this.subjectSectionError = "Please Upload past 10 Years of question papers"
@@ -248,9 +255,11 @@ subjectSectionError:any=''
     }
 this.subjectSectionMapping['data'] = this.subjects
 console.log(this.subjectSectionMapping)
-    this.fileService.uploadZipfile(this.subjectSectionMapping['files']).subscribe((res:any)=>{
-      console.log(res)
-    })
+    // this.fileService.uploadMultipleFiles(this.selectedfiles).subscribe((res:any)=>{
+    //   console.log(res)
+    // })
+
+    this.onUpload()
 }
 
   }
@@ -268,12 +277,13 @@ subjectSectionMapping:any={}
   uploadFile(e:any){
     // this.subjects['files'] = e.target.files[0]
     this.selectedfiles = Object.values(e.target.files)
-  this.subjectSectionMapping['files'] = e.target.files
+  this.subjectSectionMapping['files'] = this.selectedfiles
+  console.log(this.selectedfiles)
     console.log(this.subjects)  
 }
 
 
-selectedfiles:any=[]
+selectedfiles:File[]=[]
 
 
 // dragoverHandler(e:any){
@@ -299,4 +309,50 @@ onUploadFile(e:any){
  
   console.log(this.selectedfiles)
 }
+uploaded_files=[]
+uploadError:any=''
+template:any
+OnSelectTemplate(e:any){
+  console.log(e)
+ this.template= e.target.value
+}
+onUpload(): void {
+  this.loader=true
+  const formData = new FormData();
+  for (const file of this.selectedfiles) {
+    formData.append('files[]', file, file.name);
+  }
+
+  this.http.post<any>(environment.apiUrl+'Upload/UploadMultipleFiles', formData).subscribe(
+    (response:any) => {
+      this.loader=false
+      if(response.Status){
+        this.uploadError=''
+        this.uploaded_files = JSON.parse(response.data)
+        let upload_sub_sec_body={
+          ExamId:window.location.href.split('/')[window.location.href.split('/').length-1],
+          files_url:this.uploaded_files,
+          subSecdata:this.subjectSectionMapping['data'],
+          template:this.template,
+          UploadedBy: sessionStorage.getItem('UserDetails')!=undefined?JSON.parse(String(sessionStorage.getItem('UserDetails'))).id:''
+        }
+        console.log(upload_sub_sec_body)
+        this.loader=true
+        this.restApi.createSubjectSectionConfiguration(upload_sub_sec_body).subscribe((res:any)=>{
+          console.log(res)
+          this.loader=false
+        })
+      }else{
+        this.uploadError = "Upload Failed reason :"+response.message
+      }
+      console.log('Upload success!', response);
+    },
+    (error:any) => {
+      console.error('Error during upload:', error);
+      this.uploadError = error
+    }
+  );
+}
+
+
 }

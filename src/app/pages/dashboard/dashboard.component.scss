@@ -28,8 +28,9 @@
 }
 
 .modal-container {
-	max-height: 70vh;
-    max-width: 500px;
+	// max-height: 70vh;
+    // max-width: 500px;
+	max-height:max-content;
     margin-left: auto;
     margin-right: auto;
     background-color: #fff;
@@ -43,6 +44,7 @@
 	@media (max-width: 600px) {
 		width: 90%;
 	}
+	width:90%
 }
 
 .modal-container-header {

@@ -54,8 +54,8 @@ headers:any={"ngrok-skip-browser-warning":"69420"}
     return this.http.post(env.environment.apiUrl+'Datasource/ds_type_mapping',data)
   }
 
-  parsepdf(fileurl:any,fileType:any,startpage:any,endpage:any){
-   return this.http.get(env.environment.apiUrl+'Datasource/parse_ds?file_url='+fileurl+'&file_type='+fileType+'&startPage='+startpage+'&endPage='+endpage,{headers:this.headers})
+  parsepdf(fileurl:any,fileType:any,startpage:any,endpage:any,template:any){
+   return this.http.get(env.environment.apiUrl+'Datasource/parse_ds?file_url='+fileurl+'&file_type='+fileType+'&startPage='+startpage+'&endPage='+endpage+'&template='+template,{headers:this.headers})
   }
 
   getMyWork(UserId:any){
@@ -66,4 +66,16 @@ headers:any={"ngrok-skip-browser-warning":"69420"}
     return this.http.post(env.environment.apiUrl+'Datasource/ds_update',body)
   }
   
+
+  get_dash_analytics(UserId:any){
+    return this.http.get(env.environment.apiUrl+'Dash/get_total_work?UserId='+UserId)
+  }
+
+  createSubjectSectionConfiguration(body:any){
+    return this.http.post(env.environment.apiUrl+'SubjectSectionconf/crete_sub_sec_conf',body)
+  }
+
+  getSubjectSectionDSForVerify(UserId:any){
+    return this.http.get(env.environment.apiUrl+'SubjectSectionconf/get_sub_sec_parsed?UserId='+UserId)
+  }
 }

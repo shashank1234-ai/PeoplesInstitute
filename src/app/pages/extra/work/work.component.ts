@@ -24,6 +24,7 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
     ngOnInit(): void {
         console.log("work page")
         this.getMyWork()
+        this.getSubjectSectionConfigurationUpload()
     }
     p: number = 1;
 
@@ -53,7 +54,7 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
               }else{
 
               
-               workData = JSON.parse(this.myWorkData[i].ParsedDatasource)
+               workData =typeof(JSON.parse(this.myWorkData[i].ParsedDatasource))=='object'? JSON.parse(this.myWorkData[i].ParsedDatasource):[]
               }
               for (let j=0;j<workData.length;j++){
                 if (workData[j]['verified']!=null && workData[j]['verified']!=undefined && workData[j]['verified']==true){
@@ -97,13 +98,16 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
           this.questionList = updateQList
           updateQList=[]
           for (let i=0;i<this.questionList.length;i++){
-            if(this.questionList[i]['Question'].length>0){
+            console.log(this.questionList[i].Question.length)
+            if(this.questionList[i].Question.length>0){
               updateQList.push(this.questionList[i])
             }
           }
           this.questionList = updateQList
           console.log(this.questionList.length)
           this.parseDsId = workObj.ParsedDatasource
+          console.log(this.parseDsId)
+
 
         }
         const ref = this.storage.refFromURL(workObj.fileurl)
@@ -116,7 +120,7 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
           this.pdfSrc = res
         })
         console.log(this.pdfSrc)
-        console.log(JSON.parse(workObj.ParsedDatasource))
+        console.log((workObj.ParsedDatasource))
         console.log(workObj)
         this.parseDsId = workObj.parseDsId
         localStorage.setItem(this.parseDsId,JSON.stringify(this.questionList))
@@ -204,7 +208,7 @@ submitEdit(){
       }
       this.questionList[this.editIdx-1]['options'] = this.options
     }
-    this.questionList[this.editIdx-1]['question'] = this.questionEdit
+    this.questionList[this.editIdx-1]['Question'] = this.questionEdit
     if(this.base64String!=undefined || this.base64String!=null || this.base64String!=''){
 
     
@@ -313,5 +317,70 @@ uploadImageToQuestion(e:any,p:any){
       this.questionList[p]['image']=''
     })
    
+}
+ExamConfigurationData:any
+parsed_ds_format:any
+getSubjectSectionConfigurationUpload(){
+  this.loader=true
+  this.restApi.getSubjectSectionDSForVerify(JSON.parse(String(sessionStorage.getItem('UserDetails'))).id).subscribe((res:any)=>{
+    this.loader=false
+    console.log(res)
+    if(res.Status){
+      console.log(JSON.parse(res.data))
+      this.ExamConfigurationData =JSON.parse(res.data)
+      for (let i=0;i<this.ExamConfigurationData.length;i++){
+        let parsedData = this.ExamConfigurationData[i].DataSource
+        console.log(parsedData)
+        // let parsedds = parsedData.ParsedDatasource
+        for(let j=0;j<parsedData.length;j++){
+          console.log()
+          let parsedds = JSON.parse(parsedData[j].ParsedDS.ParsedDatasource)
+          console.log(parsedds)
+          let c=0
+          parsedds.forEach((e:any) => {
+            e['verified'] = false
+          });
+          for(let k=0;k<parsedds.length;k++){
+            if(parsedds['verified']){
+              c+=1
+            }
+          }
+          parsedData[j].ParsedDS['CompletePer'] = String(((c/parsedds.length)*100).toFixed(2))
+          c=0
+          // this.parsed_ds_format = parsedds
+          console.log(parsedData[j])
+        }
+        // this.ExamConfigurationData[i].DataSource = parsedData
+        this.ExamConfigurationData[i].DataSource = parsedData
+      }
+      console.log(this.ExamConfigurationData)
+    }
+  })
+}
+
+startVerifyDSConfig(data:any){
+console.log(data)
+if(localStorage.getItem(data.ParsedDSId)==undefined || localStorage.getItem(data.ParsedDSId)==null || localStorage.getItem(data.ParsedDSId)==''){
+  this.questionList = JSON.parse(data.ParsedDS.ParsedDatasource)
+  this.parseDsId = data.ParsedDSId
+  localStorage.setItem(data.ParsedDSId,data.ParsedDS.ParsedDatasource)
+}else{
+  this.questionList = JSON.parse(String(localStorage.getItem(data.ParsedDSId)))
+  let updateQList=[]
+  for(let i=0;i<this.questionList.length;i++){
+    if(!this.questionList[i]['verified'] && this.questionList[i].Question.length>0){
+      updateQList.push(this.questionList[i])
+    }
+  }
+  this.questionList = updateQList
+  this.parseDsId = data.ParsedDSId
+}
+const ref = this.storage.refFromURL(data.file_url)
+this.loader=true
+ref.getDownloadURL().subscribe((res:any)=>{
+  this.loader=false
+  this.pdfSrc = res
+})
+this.step='verifyQs'
 }
   }

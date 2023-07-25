@@ -43,3 +43,7 @@ bottom left of options and extract it as a block-> check for Images -> if no of 
 gsutil cors set cors.json gs://people-s-institue.appspot.com
 
 apiurl = http://ec2-50-18-246-242.us-west-1.compute.amazonaws.com:3000/
+
+
+
+ndli dataset - http://ndl.iitkgp.ac.in/document/YVc2dFdCM1hOb0dqWmorRE9kRk1WeGlhbXdwYVZhdXZaY0ZqUDVnaGdpZz0

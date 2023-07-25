@@ -254,6 +254,7 @@
           src="{{ country.imgSrc }}"
           alt="imgSrc"
           class="w-100"
+          style="height:177px"
           mat-card-image
         />
       </a>
@@ -285,8 +286,15 @@
 					<path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
 				</svg>
 			</button>
+      <div>
+        <!-- <h3 style="cursor:pointer;font-weight:bolder" ></h3> -->
+        <div class="align-right" *ngIf="modalNext=='templateSelection'" style="float: left;position: absolute;left: 24px;top: 24%;" (click)="goBack()">
+          <img class="back-arrow" style="width:10%" src="../../../../../assets/images/icons/arrow-left.png"/>
+          <span>Back</span>
+      </div>
+      </div>
 		</header>
-		<section class="modal-container-body rtf">
+		<section class="modal-container-body rtf" *ngIf="modalNext=='configSelection'">
             <label>
               Exam
             </label>
@@ -329,9 +337,22 @@
             <input type="text" class="form-control" style="margin-top:3%" (blur)="OnInsertStartPage($event,'startpage')" placeholder="Start Page"/>
             <input type="text" class="form-control" style="margin-top:3%" (blur)="OnInsertStartPage($event,'endpage')" placeholder="End Page"/>
 		</section>
+    <section class="modal-container-body rtf" *ngIf="modalNext=='templateSelection'" style="display: flex;position: relative;top: 10px;">
+      <div style="display:flex;flex-direction: column;">
+        <span>Template 1</span>
+        <img src="../../../assets/images/templates/template1.png" style="width:75%" />
+        <input style="margin: top 3%;" type="radio" [(ngModel)]="templateSelected" value="template1" (select)="OnSelectTemplate($event)"/>
+      </div>
+      <div style="display:flex;flex-direction: column;">
+        <span>Template 2</span>
+        <img style="width:75%;" src="../../../assets/images/templates/template2.png" />
+        <input type="radio" style="margin-top:3%" [(ngModel)]="templateSelected" value="template2" (select)="OnSelectTemplate($event)"/>
+      </div>
+    </section>
 		<footer class="modal-container-footer">
       <p style="color: red;margin-left: 3%;font-size: large;font-weight: bold;">{{uploadError}}</p>
-			<button class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="OnSubmitDS()">Submit</button>
+      <button class="nxt-btn col-sm-3" mat-flat-button color="primary" *ngIf="modalNext=='configSelection'" (click)="Next()">Next</button>
+			<button class="nxt-btn col-sm-3" mat-flat-button color="primary" *ngIf="modalNext=='templateSelection'" (click)="OnSubmitDS()">Submit</button>
 		</footer>
 	</article>
 </div>

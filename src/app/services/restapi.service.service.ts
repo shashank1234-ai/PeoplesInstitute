@@ -68,7 +68,7 @@ headers:any={"ngrok-skip-browser-warning":"69420"}
   
 
   get_dash_analytics(UserId:any){
-    return this.http.get(env.environment.apiUrl+'Dash/get_total_work?UserId='+UserId)
+    return this.http.get(env.environment.apiUrl+'Dash/get_total_work?UserId='+UserId,{headers:this.headers})
   }
 
   createSubjectSectionConfiguration(body:any){
@@ -76,6 +76,6 @@ headers:any={"ngrok-skip-browser-warning":"69420"}
   }
 
   getSubjectSectionDSForVerify(UserId:any){
-    return this.http.get(env.environment.apiUrl+'SubjectSectionconf/get_sub_sec_parsed?UserId='+UserId)
+    return this.http.get(env.environment.apiUrl+'SubjectSectionconf/get_sub_sec_parsed?UserId='+UserId,{headers:this.headers})
   }
 }

@@ -1,11 +1,11 @@
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Inject, OnInit} from '@angular/core';
+import { Component, Inject, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import { DOCUMENT } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RestapiServiceService } from 'src/app/services/restapi.service.service';
 import { Exception } from 'sass';
-import { timeout } from 'rxjs';
-
+import { environment } from 'src/app/environment';
+import { HttpClient } from '@angular/common/http';
 @Component({
     selector:'app-exam-onboard',
     templateUrl:'./exam-onboard.component.html',
@@ -24,7 +24,8 @@ export class ExamOnboardComponent implements OnInit {
     public dialog: MatDialog,
     @Inject(DOCUMENT) private document:any,
     private fb: FormBuilder,
-    private restAPI:RestapiServiceService
+    private restAPI:RestapiServiceService,
+    private http:HttpClient
    ){
 
    }
@@ -121,8 +122,83 @@ SubjectConfiguration(){
 
   }
 
+  subjectSectionError:any=''
   Submit(){
+    console.log(this.subjects)
+    if(this.subjects.length!=this.SubjectList.length){
+        this.subjectSectionError = "All Subjects are Not Configured"
+    }else if(this.template == null || this.template == undefined){
+      this.subjectSectionError = "Please choose a Template"
+    }
+    else if(
+      this.subjectSectionMapping['files']=='' || this.subjectSectionMapping['files']==null || this.subjectSectionMapping['files']==undefined
+    ){
+      this.subjectSectionError = "Please Upload past 10 Years of question papers"
+    }
+    else{
+        this.subjectSectionError=""
+    for(let i=0;i<this.subjects.length;i++){
 
+        this.subjects.forEach((element:any) => {
+            if (element.length==0){
+                this.subjectSectionError = "Some Fields are empty"
+            }else if(Object.values(element).length == 0){
+                this.subjectSectionError = "Please fill all the details"
+            }
+            else{
+                this.subjectSectionError=""
+            }
+        });
+    }
+this.subjectSectionMapping['data'] = this.subjects
+console.log(this.subjectSectionMapping)
+    // this.fileService.uploadMultipleFiles(this.selectedfiles).subscribe((res:any)=>{
+    //   console.log(res)
+    // })
+
+    this.onUpload()
+}
+
+  }
+
+  uploaded_files:any=[]
+
+  onUpload(): void {
+    this.loader=true
+    const formData = new FormData();
+    for (const file of this.selectedfiles) {
+      formData.append('files[]', file, file.name);
+    }
+  
+    this.http.post<any>(environment.apiUrl+'Upload/UploadMultipleFiles', formData).subscribe(
+      (response:any) => {
+        this.loader=false
+        if(response.Status){
+          this.uploadError=''
+          this.uploaded_files = JSON.parse(response.data)
+          let upload_sub_sec_body={
+            ExamId:this.ExamId,
+            files_url:this.uploaded_files,
+            subSecdata:this.subjectSectionMapping['data'],
+            template:this.template,
+            UploadedBy: sessionStorage.getItem('UserDetails')!=undefined?JSON.parse(String(sessionStorage.getItem('UserDetails'))).id:''
+          }
+          console.log(upload_sub_sec_body)
+          this.loader=true
+          this.restAPI.createSubjectSectionConfiguration(upload_sub_sec_body).subscribe((res:any)=>{
+            console.log(res)
+            this.loader=false
+          })
+        }else{
+          this.uploadError = "Upload Failed reason :"+response.message
+        }
+        console.log('Upload success!', response);
+      },
+      (error:any) => {
+        console.error('Error during upload:', error);
+        this.uploadError = error
+      }
+    );
   }
   ExamId:any
   Editable:boolean=true
@@ -292,7 +368,6 @@ removeRow(index: number,idxi:any) {
 
 }
 
-subjectSectionError:any=''
 deleteFile(file:any,idx:any){
   console.log(file)
   // console.log(this.selectedfiles.indexOf(file))
@@ -302,6 +377,12 @@ deleteFile(file:any,idx:any){
   //   return ele ? ele!=file:''
   // })
   console.log(this.selectedfiles)
+}
+template:any
+uploadError:any=""
+OnSelectTemplate(e:any){
+  console.log(e)
+ this.template= e.target.value
 }
 }
 // "rLV9JbgpnS7eTK5suynY"

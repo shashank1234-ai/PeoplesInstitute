@@ -1,7 +1,7 @@
 <div class="row">
  
   <div *ngIf="loader">
-    <img src="../../../assets/loader.gif"/>
+    <img class="loadercls" src="../../../assets/loader.gif"/>
   </div>
   <div *ngIf="!loader" class="align-dash">
   <div class="col-lg-8">
@@ -27,7 +27,7 @@
   <div class="col-lg-4">
     <div class="row">
      
-      <div class="col-lg-12 col-sm-6">
+      <div class="col-lg-12 col-sm-6" *ngIf="role!='contributor'">
         <mat-card class="cardWithShadow">
           <mat-card-content class="p-24">
             <mat-card-title>Generate Questions</mat-card-title>
@@ -80,7 +80,7 @@
         </mat-card>
       </div>
       
-      <div class="col-lg-12 col-sm-6">
+      <div class="col-lg-12 col-sm-6" *ngIf="role!='contributor'">
         <div class="">
           <mat-card class="cardWithShadow">
             <mat-card-content class="p-24">
@@ -126,10 +126,13 @@
 
  
 
-  <div class="col-lg-8" style="position: relative;bottom: 150px;">
+  <div class="col-lg-8" style="position: relative;" *ngIf="role!='contributor'">
     <mat-card class="cardWithShadow">
       <mat-card-content class="p-24">
-        <mat-card-title>Team and Work</mat-card-title>
+        <mat-card-title>Team and Work
+          <span><img src="../../../assets/images/icons/arrow-up-right.png" alt="go" style="width:3%;cursor:pointer;" (click)="openTeams()"></span>
+        </mat-card-title>
+        
         <div class="table-responsive m-t-16">
           <table mat-table [dataSource]="dataSource" class="w-100">
             <!-- Position Column -->
@@ -244,7 +247,7 @@
       </mat-card-content>
     </mat-card>
   </div>
-<div style="position: relative;bottom: 67px;">
+<div style="" *ngIf="role!='contributor'">
 <h2>Products</h2>
 <div class="row">
   <div class="col-sm-6 col-lg-3" *ngFor="let country of countryCards">
@@ -278,14 +281,14 @@
 		<header class="modal-container-header">
 			<h1 class="modal-container-title">
                 <img src="../../../../../assets/images/icons/clipboard.png" style="width: 10%;"/>
-                Configure a subject
+                Configure Datasource
             </h1>
-			<button class="icon-button close" (click)="closeModal('questionModal')">
+			<a class="icon-button close" (click)="closeModal('questionModal')">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
 					<path fill="none" d="M0 0h24v24H0z" />
 					<path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
 				</svg>
-			</button>
+			</a>
       <div>
         <!-- <h3 style="cursor:pointer;font-weight:bolder" ></h3> -->
         <div class="align-right" *ngIf="modalNext=='templateSelection'" style="float: left;position: absolute;left: 24px;top: 24%;" (click)="goBack()">
@@ -312,10 +315,41 @@
               <option value="chapter_wise">
                 Chapter Wise
               </option>
+              <option value="subject_wise">
+                Subject Wise
+              </option>
               <option value="mock_test">
                 Mock Test
               </option>
             </select>
+          <div *ngIf="dsType=='chapter_wise' || dsType=='subject_wise'">
+            <label>
+              Select Subject
+            </label>
+            <select id="subject_select" class="form-control" (change)="Onselectopt($event)">
+              <option value="">
+                Please Select
+              </option>
+              <option *ngFor="let subject of SubjectsForExam;" value="{{formatJSONToString(subject)}}">
+                {{subject.Subjectname}}
+              </option>
+            </select>
+          </div>
+          <!-- Select Chapters on selecting subject -->
+          <div *ngIf="dsType=='chapter_wise'">
+            <label>
+              Select Chapter
+            </label>
+            <select id="chapter_select" class="form-control" (change)="Onselectopt($event)">
+              <option value="">
+                Please Select
+              </option>
+              <option *ngFor="let chapter of ChapterList" value="{{formatJSONToString(chapter)}}">
+                {{chapter.ChapterName}}
+              </option>
+              
+            </select>
+          </div>
             <label *ngIf="dsType!='mock_test'">
               Types of questions
             </label>
@@ -334,8 +368,8 @@
               <option value="excel">Excel/CSV</option>
               <option value="json">JSON</option>
             </select>
-            <input type="text" class="form-control" style="margin-top:3%" (blur)="OnInsertStartPage($event,'startpage')" placeholder="Start Page"/>
-            <input type="text" class="form-control" style="margin-top:3%" (blur)="OnInsertStartPage($event,'endpage')" placeholder="End Page"/>
+            <input *ngIf="dsFormat=='pdf'" type="text" class="form-control" style="margin-top:3%" (blur)="OnInsertStartPage($event,'startpage')" placeholder="Start Page"/>
+            <input type="text" *ngIf="dsFormat=='pdf'" class="form-control" style="margin-top:3%" (blur)="OnInsertStartPage($event,'endpage')" placeholder="End Page"/>
 		</section>
     <section class="modal-container-body rtf" *ngIf="modalNext=='templateSelection'" style="display: flex;position: relative;top: 10px;">
       <div style="display:flex;flex-direction: column;">

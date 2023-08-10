@@ -7,36 +7,40 @@
 </mat-card-content>
 </mat-card> -->
 <div *ngIf="loader">
-    <img src="../../../assets/loader.gif"/>
+    <img class="loadercls" src="../../../assets/loader.gif"/>
   </div>
 <mat-card *ngIf="!loader" class="cardWithShadow theme-card">
     <mat-card-header>
       <mat-card-title class="m-b-0">My Work</mat-card-title>
     </mat-card-header>
     <mat-card-content class="b-t-1" *ngIf="step=='listQ'">
-      <div class="row">
+      <div class="row" >
         <div class="col-12">
           <mat-card class="b-1 shadow-none">
             <mat-card-header>
               <mat-card-title>DataSource Upload</mat-card-title>
             </mat-card-header>
-              <mat-list>
+              <mat-list *ngIf="myWorkData.length>0">
                 <mat-list-item *ngFor="let work of myWorkData">
+                  
                   <mat-icon matListItemIcon>note</mat-icon>
                   <div matListItemTitle class="mat-body-2 f-w-600">{{ work.filename }}</div>
                   <div matListItemLine class="f-s-14 mat-body-1">{{ work.fileurl }}</div>
                   <div matListItemLine class="f-s-14 mat-body-1" style="color:green;font-size:large;font-weight:bolder">{{work.completePercentage}}% Complete 
                     <a style="color:blue;text-decoration: underline;cursor:pointer" *ngIf="work.completePercentage==0" (click)="startVerify(work,'new')">Start</a>
                     <a style="color:blue;text-decoration: underline;cursor: pointer;" *ngIf="work.completePercentage!=0" (click)="startVerify(work,'continue')">Continue</a>
-                </div>
+              </div>
                 </mat-list-item>
               </mat-list>
-           
+           <div class="no-data" *ngIf="myWorkData.length==0">
+            <img class="work-hex" src="../../../../assets/images/icons/hex.png"/>
+            <span>Nothing here yet come back once you upload data</span>
+           </div>
           </mat-card>
           </div>
          
       </div>
-      <div class="col-12">
+      <div class="col-12" >
         <mat-card class="b-1 shadow-none">
          <mat-card-header>
             <mat-card-title>Exam Section Configuration Upload</mat-card-title>
@@ -53,6 +57,7 @@
               </div>
               </mat-list-item>
             </mat-list> -->
+
             <mat-expansion-panel *ngFor="let examConfig of ExamConfigurationData;let i = index">
               <mat-expansion-panel-header>
                 <mat-panel-title style="font-size: 1rem;">{{examConfig.ExamData.ExamName}}</mat-panel-title>
@@ -73,12 +78,16 @@
                     <td>{{data_source.verified?"Verified":"In Process"}}</td>
                     <td>{{data_source.ParsedDS.CompletePer}}</td>
                     <td>
-                      <button mat-button class="primary" (click)="startVerifyDSConfig(data_source)">Verify</button>
+                      <button mat-button class="primary" (click)="startVerifyDSConfig(data_source,examConfig.ExamData.ExamId)">Verify</button>
                     </td>
                   </tbody>
               </table>
               </div>
             </mat-expansion-panel>
+            <div class="no-data" *ngIf="ExamConfigurationData.length==0">
+              <img class="work-hex" src="../../../../assets/images/icons/hex.png"/>
+              <span>Nothing here yet come back once you upload data</span>
+            </div>
           </mat-card>
       </div>
     </mat-card-content>
@@ -93,25 +102,71 @@
       </div>
       
         <div class="col-lg-12" *ngFor="let quest of questionList | paginate: { itemsPerPage: 1, currentPage: p };let i=index" style="margin-top: 2%;">
-          <div  *ngIf="!edit && quest.Question.length>0">{{quest.Question.length}}
+          <div  *ngIf="!edit && quest.Question.length>0">
           <div style="cursor:pointer;float:right;margin-right:3%" (click)="EditQuestion(quest,p)" >
             <img src="../../../../assets/images/icons/pencil.png"/>
           </div>
             <!-- <div *ngIf="!quest.verified"> -->
-            <div >
-            <label>Question :</label>
+            <div style="display: flex;flex-direction: column;">
+            <label style="font-weight: bold;font-size:large">Question :</label>
             <span>{{quest.Question}}</span>
             </div>
-            <div *ngIf="quest.image!=undefined">
-                <label>Image:</label>
+            <div *ngIf="quest.image!=undefined" style="display: flex;flex-direction: column;margin-bottom: 2%;margin-top: 2%;">
+                <label style="font-weight: bold;font-size:large">Image:</label>
                 <!-- <span>{{basedecode(quest.image)}}</span> -->
-                <img [src]="basedecode(quest.image)" />
+                <img [src]="basedecode(quest.image)" style="width:40%" />
             </div>
             <div *ngFor="let opt of quest.options;let j= index">
               <!-- <li >{{opt}}</li>-->
               <input  type="radio" class="customradio" value="{{j}}" (change)="onSelectOption($event,p)"/><p>
                 {{opt}}
               </p>
+            </div>
+            <div *ngIf="dsType=='subject_wise'" style="width:50%">
+              <label>Select Chapter</label>
+              <select class="form-control" (change)="OnSelectChpt($event,p)">
+                <option value="">
+                  Please Select
+                </option>
+                <option *ngFor="let chptList of ChaptersList" value="{{StringifyJSON(chptList)}}">
+                  {{chptList.ChapterName}}
+                </option>
+              </select>
+            </div>
+            <div *ngIf="dsType=='mock_test' || dsType=='ExamSubConfig'" class="row">
+              <div class="col-lg-6">
+              <label>Select Subject</label>  
+              <select class="form-control" (change)="OnSelectSubject($event)">
+                <option value="">Please Select</option>
+                <option *ngFor="let sub of SubjectList" value="{{StringifyJSON(sub)}}">{{sub.Subjectname}}</option>
+              </select>
+            </div>
+            <div class="col-lg-6">
+              <label>
+                Select Chapter
+              </label>
+              <select class="form-control" (change)="OnSelectChpt($event,p)">
+                <option value="">
+                  Please Select
+                </option>
+                <option *ngFor="let chptList of ChaptersList" value="{{StringifyJSON(chptList)}}">
+                  {{chptList.ChapterName}}
+                </option>
+              </select>
+            </div>
+            </div>
+            <div *ngIf="quest.Explaination!=undefined">
+              <p style="font-weight: bold;font-size:large">Explaination:</p>
+              <span *ngIf="quest.ExplainationType=='Image'">
+                <p>
+                 <img [src]="basedecode(quest.Explaination)" style="width:50%" />
+                </p>
+              </span>
+              <span *ngIf="quest.ExplainationType!='Image'">
+                <p>
+                 {{quest.Explaination}}
+                </p>
+              </span>
             </div>
             <div style="display:flex;float:left;margin-top:3%;margin-bottom:4%">
             <button class="form-control" style="background-color:green;color:white" *ngIf="quest.verified">Approved</button>
@@ -125,7 +180,7 @@
             <div>
               <span (click)="closeEdit()" class="close-btn">X</span>
             </div>
-            <label>Question</label>
+            <label style="font-weight:bold;font-size: large;">Question</label>
             <input type="text" class="form-control" width="30%" value="{{questionEdit}}" (blur)="onEditJson($event,'question')"/>
             <label class="optlabel">Options:</label>
             <br>
@@ -198,11 +253,43 @@
             <input accept="image/*"  *ngIf="optTypeD=='image'" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt4')"/>
           </div>
           </div>
-          <div>
-            <label>
+          <div *ngIf="imageEdit!=''" style="margin-top: 3%;display: flex;margin-bottom:3%">
+            <label style="font-weight:bold;font-size: large;margin-bottom: 2%;">Image:</label>
+            <img style="width:30%" [src]="basedecode(imageEdit)"/>
+            <p style="font-weight:bold;color:red;position:relative;left:3%" (click)="clearimage()">X</p>
+          </div>
+          <div *ngIf="imageEdit==''">
+            <label style="margin-top: 3%;display: flex;margin-bottom:3%">
               Image
             </label>
             <input type="file" class="form-control" accept="image/*" (change)="uploadImageToQuestion($event,p)"/>
+          </div>
+          <div >
+            <label style="margin-top: 3%;display: flex;margin-bottom:3%">Explaination:</label>
+            <textarea *ngIf="explainType!='image'" cols="100" rows="10" class="form-control" (change)="OnChangeExplaination($event,p)">{{explainationForQuestion}}</textarea>
+            <div *ngIf="explainType=='image'">
+            <img  [src]="basedecode(explainationForQuestion)" style="width:80%"/>
+            <span *ngIf="explainationForQuestion.length>0" style="font-size:larger;color:red;font-weight:bold;position:relative" (click)="clearExplain()">X</span>
+          </div>
+            <br>
+            <span style="margin:auto;font-weight:bolder;font-size:xx-large">OR</span>
+            <br>
+            <input type="file" class="form-control" (change)="uploadExplainPrompt($event,p)"/>
+            <br>
+            <div *ngIf="isexplainParse">
+              <span style="font-weight:bolder">Parse/Image Upload*</span>
+              <!-- need a tooltip -->
+              <div style="display:flex;justify-content: space-evenly;position:relative;right:25%">
+              <div class="align-row">
+                <span>Parse:</span>
+              <input type="radio" class="customradio1" (change)="onChangeParseOpt($event)" [(ngModel)]="explainUploadOption" value="P"/>
+            </div>
+            <div class="align-row">
+              <span>Dont Parse:</span>
+            <input type="radio" class="customradio1" (change)="onChangeParseOpt($event)" [(ngModel)]="explainUploadOption" value="NP"/>
+          </div>
+        </div>
+            </div>
           </div>
           <button  class="form-control success" style="margin-top:3%" (click)="submitEdit()" *ngIf="edit">Submit</button>
             
@@ -215,7 +302,39 @@
         </div>
         
         <!-- </div> -->
-    </mat-card-content>
+        <div class="modal" id="parseModal">
+          <article class="modal-container">
+            <header class="modal-container-header">
+              <h1 class="modal-container-title">
+                        <img src="../../../../../assets/images/icons/clipboard.png" style="width: 10%;"/>
+                        Choose Option
+                      </h1>
+              <a class="icon-button close" (click)="closeModal('parseModal')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                  <path fill="none" d="M0 0h24v24H0z" />
+                  <path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                </svg>
+              </a>
+              <div>
+                <!-- <h3 style="cursor:pointer;font-weight:bolder" ></h3> -->
+                
+              </div>
+            </header>
+            <section class="modal-container-body rtf">
+                    
+        
+                   
+                  <!-- Select Chapters on selecting subject -->
+                 
+                   
+            </section>
+            <footer class="modal-container-footer">
+             
+            </footer>
+          </article>
+        </div>
+   
+      </mat-card-content>
 
     <!-- <div class="col-lg-6">
       <pdf-viewer [src]="pdfSrc"  [render-text]="true"></pdf-viewer>

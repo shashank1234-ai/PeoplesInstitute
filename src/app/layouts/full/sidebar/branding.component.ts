@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
     <div class="branding" style="border-bottom:2px solid #80808063">
       <a href="/">
         <img
-          src="./assets/images/logos/{{Country}}.png"
+          src="./assets/images/country/{{Country}}.png"
           style="position: relative;width: 40%;left: 24%;"
           class="align-middle m-2"
           alt="logo"

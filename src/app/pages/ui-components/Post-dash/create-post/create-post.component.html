@@ -1,0 +1,71 @@
+<h1>Create Post</h1>
+<div *ngIf="loader">
+  <img class="loadercls" src="../../../assets/loader.gif"/>
+</div>
+<mat-card>
+    <div  class="col-lg-12" style="margin-bottom: 5%;">
+        <label *ngIf="!loader" style="font-weight:bold;font-size:large">
+            Title
+        </label>
+        <input *ngIf="!loader" class="form-control" (change)="onChageTitle($event)" />
+        <br>
+        <label *ngIf="!loader" style="font-weight:bold;font-size:large">
+          Description
+      </label>
+      <input *ngIf="!loader" class="form-control" (change)="onChangeDescription($event)" />
+      <br>
+        <label *ngIf="!loader" style="font-weight:bold;font-size:large">Exam</label>
+        <select id="examselect" class="form-control" (change)="onSelectExam($event)">
+          <option value="">Please Select</option>
+          <option *ngFor="let exam of examList;let i=index" value="{{formatJSONToString(exam)}}">{{exam.ExamName}}</option>
+        </select>
+        <br>
+        
+        <ckeditor [editor]="Editor" [(ngModel)]="editorData" [data]="editorData" (blur)="onChagePost($event)" *ngIf="!loader"></ckeditor>
+        <br>
+        <div style="display: flex;flex-direction: column;">
+        <!-- <label style="font-weight:bold;font-size: large;">Create Video</label>
+        <br>
+        <label class="switch" id="switch" (change)="Switch($event)">
+            <input type="checkbox" checked>
+            <span class="slider round"></span>
+          </label> -->
+          <div>
+            <span style="color:red;font-weight: bold;font-size:large">{{createVideoError}}</span>
+          </div>
+        </div>
+          <br>
+        <button mat-flat-button class="form-control" color="primary" (click)="onCreatePost($event)">Create Post</button>
+
+    </div>
+
+</mat-card>
+<div class="modal" id="videoId">
+	<article class="modal-container">
+		<header class="modal-container-header">
+			<h1 class="modal-container-title">
+                <img src="../../../../../assets/images/icons/brand-zoom.png" style="width: 10%;"/>
+                Create Video
+              </h1>
+			<a class="icon-button close" style="color: black;font-size: xxx-large;font-weight: bolder;float: right;position: absolute;right: 10%;" (click)="closeModal('videoId')">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+					<path fill="none" d="M0 0h24v24H0z" />
+					<path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+				</svg>
+			</a>
+      <div>       
+      </div>
+		</header>
+		<section class="modal-container-body rtf">
+      <div *ngFor="let sentence of sentences;let i=index" class="row" style="display: flex;flex-direction: column;width: 90%;margin: auto;">
+        <input type="text" class="form-control col-lg-6" value="{{sentence}}"/>
+        <input type="file" accept="image/*" class="form-control col-lg-6" (change)="onUploadImage($event,i)"/>
+        <br>
+        </div>
+		</section>
+   
+		<footer class="modal-container-footer">
+			<button class="nxt-btn col-sm-3" mat-flat-button color="primary"   (click)="OnClickGenerateVideo()">Submit</button>
+		</footer>
+	</article>
+</div>

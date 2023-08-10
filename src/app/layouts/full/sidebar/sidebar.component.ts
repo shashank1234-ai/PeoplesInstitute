@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { navItems } from './sidebar-data';
+import { navItems,contributorNav,SubjectMatterExpertNav } from './sidebar-data';
 import { NavService } from '../../../services/nav.service';
 import { Router } from '@angular/router';
 @Component({
@@ -8,11 +8,18 @@ import { Router } from '@angular/router';
 })
 export class SidebarComponent implements OnInit {
   navItems = navItems;
+  contributorNav = contributorNav
+  SMENav = SubjectMatterExpertNav
   Country:any="India"
   constructor(public navService: NavService,private route:Router) {}
   superAdmin:boolean=true
+  role:any=''
   ngOnInit(): void {
     this.checkLogin()
+    if(sessionStorage.getItem('UserDetails')!=undefined || sessionStorage.getItem('UserDetails')!=null){
+      this.role = JSON.parse(String(sessionStorage.getItem('UserDetails'))).role
+      console.log(this.role)
+    }
     }
 
     navigate(page:any){

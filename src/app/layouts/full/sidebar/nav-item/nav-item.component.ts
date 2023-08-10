@@ -19,6 +19,7 @@ export class AppNavItemComponent implements OnChanges {
   }
 
   ngOnChanges() {
+    // console.log(this.item)
     this.navService.currentUrl.subscribe((url: string) => {
       if (this.item.route && url) {
       }

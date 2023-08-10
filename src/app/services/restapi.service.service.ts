@@ -78,4 +78,48 @@ headers:any={"ngrok-skip-browser-warning":"69420"}
   getSubjectSectionDSForVerify(UserId:any){
     return this.http.get(env.environment.apiUrl+'SubjectSectionconf/get_sub_sec_parsed?UserId='+UserId,{headers:this.headers})
   }
+
+  getSubjectsSectionConfig(examId:any){
+    return this.http.get(env.environment.apiUrl+'SubjectSectionconf/get_sub_sec_config?ExamId='+examId,{headers:this.headers})
+  }
+
+  getSummarizedText(body:any){
+    return this.http.post(env.environment.apiUrl+'VideoCreation/summarize_text_for_video',body)
+  }
+
+  CreateVideo(body:any){
+    return this.http.post(env.environment.apiUrl+'VideoCreation/create_video',body)
+  }
+
+  CreatePost(body:any){
+    return this.http.post(env.environment.apiUrl+'Posts/create_post',body)
+  }
+
+  getPosts(body:any){
+    return this.http.post(env.environment.apiUrl+'Posts/get_posts',body)
+  }
+
+  getChaptersForExam(body:any){
+    return this.http.post(env.environment.apiUrl+'Subject/get_chapter_sub_exam',body)
+  }
+
+  UpsertChapter(body:any){
+    return this.http.post(env.environment.apiUrl+'Subject/upsert_chapter',body)
+  }
+
+  deleteChapter(body:any){
+    return this.http.post(env.environment.apiUrl+'Subject/delete_chapter',body)
+  }
+
+  PostJSONExcel(body:any){
+    return this.http.post(env.environment.apiUrl+'Datasource/parse_ds_json_excel',body)
+  }
+
+  uploadSolutionImage(body:any){
+    return this.http.post(env.environment.apiUrl+'Work/upload_solution',body)
+  }
+
+  partialUpdateDs(body:any){
+    return this.http.post(env.environment.apiUrl+'Datasource/update_partial_work',body)
+  }
 }

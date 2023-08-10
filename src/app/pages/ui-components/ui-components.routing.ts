@@ -6,31 +6,25 @@ import { AppChipsComponent } from './chips/chips.component';
 import { AppListsComponent } from './lists/lists.component';
 import { AppMenuComponent } from './menu/menu.component';
 import { AppTooltipsComponent } from './tooltips/tooltips.component';
-
+import { PostDashboardComponent } from './Post-dash/post.dash.component';
+import { CreatePostComponent } from './Post-dash/create-post/create-post.component';
+import {VerifyPostComponent} from './Post-dash/verify-post/verify.post.component'
 export const UiComponentsRoutes: Routes = [
   {
     path: '',
     children: [
       {
-        path: 'badge',
-        component: AppBadgeComponent,
+        path:'post',
+        component:PostDashboardComponent
       },
       {
-        path: 'chips',
-        component: AppChipsComponent,
+        path:'createPost',
+        component:CreatePostComponent
       },
       {
-        path: 'lists',
-        component: AppListsComponent,
-      },
-      {
-        path: 'menu',
-        component: AppMenuComponent,
-      },
-      {
-        path: 'tooltips',
-        component: AppTooltipsComponent,
-      },
+        path:'verifyPost',
+        component:VerifyPostComponent
+      }
     ],
   },
 ];

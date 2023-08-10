@@ -19,7 +19,7 @@ import { FileUploadService } from 'src/app/services/FileService/file.upload.serv
 import {Inject} from '@angular/core'
 import { DOCUMENT } from '@angular/common';
 import { RestapiServiceService } from 'src/app/services/restapi.service.service';
-
+import { Router } from '@angular/router';
 interface month {
   value: string;
   viewValue: string;
@@ -128,8 +128,12 @@ const ELEMENT_DATA: productsData[] = [
 export class AppDashboardComponent implements OnInit{
 
   ngOnInit(): void {
+    if(sessionStorage.getItem('UserDetails')!=undefined || sessionStorage.getItem('UserDetails')!=null){
+      this.role = JSON.parse(String(sessionStorage.getItem('UserDetails'))).role
+    }
       this.get_TotalWork()
   }
+  role:any=''
   @ViewChild('chart') chart: ChartComponent = Object.create(null);
 
   public salesOverviewChart!: Partial<salesOverviewChart> | any;
@@ -213,6 +217,7 @@ export class AppDashboardComponent implements OnInit{
     private fileUploadService:FileUploadService,
     @Inject(DOCUMENT) private document:any,
     private restApi:RestapiServiceService,
+    private router:Router
   ) {
     // sales overview chart
     this.salesOverviewChart = {
@@ -472,11 +477,11 @@ validateupload(){
     this.uploadError ="Please select Type of Questions in the Uploded data source"
   }else if(this.dsFormat == undefined || this.dsFormat == ''){
     this.uploadError = "Please select Format of data source"
-  }else if(this.templateSelected==undefined || this.templateSelected==null){
+  }else if(this.dsFormat=='pdf' && (this.templateSelected==undefined || this.templateSelected==null)){
     this.uploadError = "Please Select a template"
-  }else if(this.startPage==undefined || this.startPage==null || this.startPage==''){
+  }else if(this.dsFormat == 'pdf' && (this.startPage==undefined || this.startPage==null || this.startPage=='')){
     this.uploadError = "Start Page is Empty"
-  }else if(this.endPage==undefined || this.endPage == null || this.endPage == ''){
+  }else if(this.dsFormat == 'pdf' && (this.endPage==undefined || this.endPage == null || this.endPage == '')){
     this.uploadError = "End Page is Empty"
   }
   else{
@@ -520,9 +525,9 @@ this.examSubMap = res.data
           let filetype = this.dsFormat
           let fileurl = this.shortLink
           this.loader=true
-          let template = this.templateSelected
           // "StartPage":this.startPage,
           // "endPage":this.endPage
+          if(this.dsFormat=='pdf'){
 
           this.restApi.parsepdf(fileurl,filetype,this.startPage,this.endPage,this.templateSelected).subscribe((resparse:any)=>{
             this.loader=false
@@ -534,23 +539,60 @@ this.examSubMap = res.data
                 "ExamId":this.examId,
                 "datasourceId":final_submit_return.data,
                 "datasourceType":this.dsType,
-                "parsedDatasourceId":resparse.data
+                "parsedDatasourceId":resparse.data,
+                "SubjectId":this.dsType!='mock_test'?this.selectedSubject.subjectId:'',
+                "ChapterId":this.dsType=='chapter_wise'?this.selectedChapters.id:''
               }
+              // if(this.dsType == 'chapter_wise' || this.dsType=='subject_wise'){
+              //   DsTypeMap.SubjectId = this.selectedSubject.subjectId
+              // }
               this.loader=true
               this.restApi.PostDsTypeMap(DsTypeMap).subscribe((resdsType:any)=>{
                 this.loader=false
                 console.log(resdsType)
                 if(resdsType.Status){
                   alert(resdsType.message)
+                  this.clearModalFields()
                 }else{
                   alert(resdsType.message)
                 }
               })
             }
           })
-         
+        }else{
+          let body ={
+            file_url:this.shortLink,
+            ds_type:this.dsFormat,
+            file_type:filetype
+          }
+          this.loader=true
+          this.restApi.PostJSONExcel(body).subscribe((res_:any)=>{
+            this.loader=false
+            console.log(res_)
+            if(res_.Status){
+              let final_submit_return = res_
+              var DsTypeMap={
+                "ExamId":this.examId,
+                "datasourceId":final_submit_return.data,
+                "datasourceType":this.dsType,
+                "parsedDatasourceId":res_.data,
+                "SubjectId":this.dsType!='mock_test'?this.selectedSubject.subjectId:'',
+                "ChapterId":this.dsType=='chapter_wise'?this.selectedChapters.id:''
+              }
+              this.loader=true
+              this.restApi.PostDsTypeMap(DsTypeMap).subscribe((res_ds_type:any)=>{
+                this.loader=false
+                if(res_ds_type.Status){
+                  alert(res_ds_type.message)
+                }else{
+                  alert(res_ds_type.message)
+                }
+              })
+            }
+
+          })
         }
-      })
+      }})
     })
     //call upload module and parsing logic
     // let OEP_DS_data = {
@@ -559,10 +601,24 @@ this.examSubMap = res.data
     // this.restApi.parseDSOEP()
    }
   }
+
+  clearModalFields(){
+    this.modalNext = 'configSelection'
+    this.dsType=''
+    this.examselect=''
+    this.examId=''
+    this.qtype=''
+    this.dsFormat=''
+    this.selectedChapters=''
+    this.selectedSubject=''
+    this.templateSelected=''
+  }
 dsType:any
 examselect:any
 qtype:any
 dsFormat:any
+selectedChapters:any
+selectedSubject:any
   Onselectopt(e:any){
     console.log(e)
     if(e.target.id == "dsType"){
@@ -571,12 +627,21 @@ dsFormat:any
     }
     else if(e.target.id == "examselect"){
       this.examselect = e.target.selectedOptions[0].value
+      console.log(this.examselect)
+      this.examId = JSON.parse(this.examselect).id
+      this.getSubjectsExam(this.examId)
     }else if(e.target.id=="qtype"){
       this.qtype =  e.target.selectedOptions[0].value 
     }else if(e.target.id == "dsFormat"){
       this.dsFormat = e.target.selectedOptions[0].value 
+    }else if(e.target.id=="chapter_select"){
+this.selectedChapters = JSON.parse(e.target.selectedOptions[0].value)
+    }else if(e.target.id=="subject_select"){
+      this.selectedSubject = JSON.parse(e.target.selectedOptions[0].value)
+      this.getChapterListSubject(this.selectedSubject,this.examId)
+
     }
-    console.log(this.dsType,this.dsFormat,this.qtype,this.examselect)
+    console.log(this.dsType,this.dsFormat,this.qtype,this.examselect,this.selectedSubject)
   }
 
   formatJSONToString(jsonObj:any){
@@ -584,6 +649,23 @@ dsFormat:any
   }
   startPage:any
   endPage:any
+  ChapterList:any
+getChapterListSubject(subject:any,exam:any){
+  let body = {
+    ExamId:exam,
+    SubjectId:subject.subjectId
+  }
+  console.log(body)
+  this.restApi.getChaptersForExam(body).subscribe((res:any)=>{
+    console.log(res)
+    if(res.Status){
+this.ChapterList = JSON.parse(res.data)
+    }else{
+      this.ChapterList=[{ChapterName:'No Data Found'}]
+    }
+  })
+}
+
   OnInsertStartPage(e:any,field:any){
     if (field=='startpage'){
       this.startPage = e.target.value
@@ -617,4 +699,18 @@ dsFormat:any
   goBack(){
     this.modalNext = 'configSelection'
   }
+SubjectsForExam:any=[]
+  getSubjectsExam(examId:any){
+    this.restApi.getSubjectsForExam(examId).subscribe((res:any)=>{
+      console.log(res)
+      if(res.Status){
+        this.SubjectsForExam = JSON.parse(res.data).Subjects
+      }
+    })
+  }
+
+  openTeams(){
+    this.router.navigate(['/oep/teams/<id>'])
+  }
 }
+

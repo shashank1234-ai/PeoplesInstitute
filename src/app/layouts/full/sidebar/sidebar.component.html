@@ -1,8 +1,8 @@
 <div class="flex-layout">
   <app-branding></app-branding>
-  <mat-nav-list class="sidebar-list">
+  <mat-nav-list *ngIf="role=='countryhead'"  class="sidebar-list">
     <app-nav-item *ngFor="let item of navItems" [item]="item"> </app-nav-item>
-    <a mat-list-item *ngIf="superAdmin"
+    <!-- <a mat-list-item *ngIf="role=='countryhead'"
   class="menu-list-item"
 >
   <i-tabler 
@@ -11,9 +11,9 @@
     matListItemIcon
   ></i-tabler>
   <span class="hide-menu">Onboard Country</span>
-</a>
+</a> -->
 
-<a mat-list-item (click)="logout()"
+<!-- <a mat-list-item (click)="logout()"
 class="menu-list-item"
 >
 <i-tabler
@@ -22,7 +22,59 @@ class="menu-list-item"
   matListItemIcon
 ></i-tabler>
 <span class="hide-menu">Logout</span>
-</a>
+</a> -->
+  </mat-nav-list>
+ 
+ <!-- Contributor -->
+ 
+  <mat-nav-list *ngIf="role=='contributor'"  class="sidebar-list">
+    <app-nav-item *ngFor="let item of contributorNav" [item]="item"> </app-nav-item>
+    <!-- <a mat-list-item *ngIf="role=='countryhead'"
+  class="menu-list-item"
+>
+  <i-tabler 
+    class="routeIcon"
+    name="flag-filled"
+    matListItemIcon
+  ></i-tabler>
+  <span class="hide-menu">Onboard Country</span>
+</a> -->
+
+<!-- <a mat-list-item (click)="logout()"
+class="menu-list-item"
+>
+<i-tabler
+  class="routeIcon"
+  name="lock"
+  matListItemIcon
+></i-tabler>
+<span class="hide-menu">Logout</span>
+</a> -->
+  </mat-nav-list>
+
+  <mat-nav-list *ngIf="role=='SME'"  class="sidebar-list">
+    <app-nav-item *ngFor="let item of SMENav" [item]="item"> </app-nav-item>
+    <!-- <a mat-list-item *ngIf="role=='countryhead'"
+  class="menu-list-item"
+>
+  <i-tabler 
+    class="routeIcon"
+    name="flag-filled"
+    matListItemIcon
+  ></i-tabler>
+  <span class="hide-menu">Onboard Country</span>
+</a> -->
+
+<!-- <a mat-list-item (click)="logout()"
+class="menu-list-item"
+>
+<i-tabler
+  class="routeIcon"
+  name="lock"
+  matListItemIcon
+></i-tabler>
+<span class="hide-menu">Logout</span>
+</a> -->
   </mat-nav-list>
   <div class="p-24 m-t-auto">
     <div class="d-flex align-items-center rounded p-20 m-t-20">

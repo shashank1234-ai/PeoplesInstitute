@@ -1,5 +1,5 @@
 <div *ngIf="loader">
-    <img src="../../../assets/loader.gif"/>
+    <img class="loadercls" src="../../../assets/loader.gif"/>
   </div>
 
 <div *ngIf="step=='basicInfo' &&!loader">
@@ -41,7 +41,7 @@
         <tr *ngFor="let subject of SubjectList;let i=index">
           <td>{{subject.Subjectcode}}</td>
           <td>{{subject.Subjectname}}</td>
-          <td><button class="primary col-sm-3" mat-flat-button color="primary">Update</button></td>
+          <td><button class="primary col-sm-3" mat-flat-button color="primary" (click)="openChaptersList(subject)">Update</button></td>
         </tr>
     </tbody>
     <div *ngIf="SubjectList.length>0">
@@ -192,3 +192,105 @@
         <button class="col-sm-3 finish-btn" mat-flat-button color="primary" (click)="Submit()">Finish</button>
     </div>
     </div>
+
+    <div *ngIf="step=='ChapterConfigSubject' &&!loader">
+      <div class="align-right" (click)="StepTo('basicInfo')">
+        <img class="back-arrow" src="../../../../../assets/images/icons/arrow-left.png"/>
+        <span>Back</span>
+    </div>
+      <h3>
+        Chapters List
+      </h3>
+      <div style="display:flex">
+      <h5>
+        {{ExamName}} >
+      </h5>
+      <h5>
+        {{SubjectName}}
+      </h5>
+    </div>
+    <div>
+      <button class="form-control col-lg-3" style="float:right;margin-right:3%;width:30%;background:rgba(103, 148, 245, 0.813);color:white" color="primary" (click)="openModal('chapterModal')">Add Chapter</button>
+    </div>
+    <table>
+      <thead>
+      <tr>
+        <th>Sr No.</th>
+        <th>Chapter Code</th>
+        <th>Chapter Name</th>
+        <th>Total Questions</th>
+        <th>Action</th>
+      </tr>
+  </thead>
+  <tbody *ngIf="ChapterList.length>0">
+      <tr *ngFor="let chapter of ChapterList;let i=index">
+        <td>
+          {{i+1}}
+        </td>
+        <td class="tbleCpt{{Stringify(i)}}">
+          <span>{{chapter.ChapterCode}}</span>
+        </td>
+        <td class="tbleCpt{{Stringify(i)}}">
+          <span>{{chapter.ChapterName}}</span>
+        </td>
+        <td>
+          {{chapter.Qcount}}
+        </td>
+        <td class="tbleCpt{{Stringify(i)}}">
+          <img src="../../../../../assets/images/icons/pencil.png" style="cursor:pointer" (click)="UpdateChapter(chapter,i)"/>
+          <a style="color:red;font-weight:bold;font-size:x-large;cursor: pointer;" (click)="deleteChapter(chapter)">X</a>
+          <!-- <button class="primary col-sm-3" mat-flat-button color="primary" (click)="UpdateChapter(chapter,i)">Update</button> -->
+        </td>
+      </tr>
+  </tbody>
+  <!-- <div *ngIf="ChapterList.length>0">
+      <button class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="StepTo('SubjectConfig')">back</button>
+  </div> -->
+  <tbody *ngIf="ChapterList.length==0">
+      <div class="emptyState">
+          <div class="emptyState__visual">
+              <img src="../../../../../assets/images/icons/hex.png"/>
+          </div>
+      
+          <h2 class="emptyState__title">
+              No Chapters Added Yet!!
+          </h2>
+          <div class="emptyState__description">
+              Start Adding the Chapters for {{SubjectName}}
+          </div>
+      </div>
+  </tbody>
+    </table>
+    <div class="modal" id="chapterModal">
+      <article class="modal-container">
+          <header class="modal-container-header">
+              <h1 class="modal-container-title">
+                  <img src="../../../../../assets/images/icons/clipboard.png" style="width: 10%;"/>
+                  Create Chapter
+                </h1>
+              <button class="icon-button" (click)="closeModal('chapterModal')">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                      <path fill="none" d="M0 0h24v24H0z" />
+                      <path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                  </svg>
+              </button>
+            
+          </header>
+          <section class="modal-container-body rtf">
+              <div>
+                <div>
+                <input type="text" class="form-control col-lg-12" [(ngModel)]="chptcode" placeholder="Chapter Code"/>
+                <br>
+                <input type="text" class="form-control col-lg-12" [(ngModel)]="chptName" placeholder="Chapter name"/>
+                </div>
+                
+                </div>
+          </section>
+          <footer class="modal-container-footer">
+              <button *ngIf="!editchpt" class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="createChapter()">Create</button>
+              <button *ngIf="editchpt" class="nxt-btn col-sm-3" mat-flat-button color="primary" (click)="UpdateChapterAPI()">Update</button>
+          </footer>
+      </article>
+  </div>
+    </div>
+

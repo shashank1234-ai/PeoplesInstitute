@@ -6,6 +6,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FileUploadService } from 'src/app/services/FileService/file.upload.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/app/environment';
+import { IconBrandMonday } from 'angular-tabler-icons/icons';
 @Component({
     selector:'app-exam-configuration',
     templateUrl:'./exam-configurationdetails.component.html',
@@ -117,11 +118,25 @@ export class ExamConfigurationComponent implements OnInit{
         }else{
             this.router.navigate(['/oep/exam-dashboard'])
         }
+// this.getExamSubConfig()
     }
     SubjectList:any=[];
+
+    SubjectSectionListEdit:any=[]
+    // getExamSubConfig(){
+    //   this.restApi.getSubjectsSectionConfig(this.ExamId).subscribe((res:any)=>{
+    //     console.log(res)
+    //     console.log(JSON.parse(res.data))
+    //     this.SubjectSectionListEdit = JSON.parse(res.data)
+    //   })
+    // }
     openModal(modalId:any){
         let modal = this.document.getElementById(modalId)
         modal.style.display = 'block'
+        if(modalId=='chapterModal' && !this.editchpt){
+          this.chptName=''
+          this.chptcode=''
+        }
     }
 
     StepTo(page:any){
@@ -353,6 +368,127 @@ onUpload(): void {
     }
   );
 }
+SubjectName:any
+ChapterList:any
+SubjectId:any
+subjectSelected:any
+openChaptersList(subject:any){
+  this.subjectSelected = subject
+  this.SubjectName = subject.Subjectname
+  this.SubjectId = subject.subjectId
+  console.log(subject,this.ExamId)
+  // get Chapters for Subject for exam -> examId,subjectId
+  let body={
+    "ExamId":this.ExamId,
+    "SubjectId":subject.subjectId
+  }
+  this.restApi.getChaptersForExam(body).subscribe((res:any)=>{
+    console.log(res)
+    console.log(res.data)
+    if(res.Status){
+      this.step = "ChapterConfigSubject"
+      this.ChapterList=JSON.parse(res.data)
+    }
+  })
+}
+editchpt:boolean=false
+idx:any
+chptId:any
+UpdateChapter(chpt:any,idx:any){
+  // console.log(chpt,idx)
+  // let fields = this.document.getElementsByClassName('tbleCpt'+String(idx))
+  // console.log(fields)
+  // let chaptercode = fields[0].innerHTML
+  // let chapterName = fields[1].innerHTML
+  // let btn = fields[2].innerHTML
+  // chaptercode =`<input type="text" id='chapterCode' class="form-control" value="${chpt.ChapterCode}" (blur)="updateChapter($event)" />`
+  // chapterName = `<input type="text" id='chaptername' class="form-control" value=${chpt.ChapterName} (blur)="updateChapter($event)"/>`
+  // fields[0].innerHTML = chaptercode
+  // fields[1].innerHTML = chapterName
+  this.chptcode = chpt.ChapterCode
+  this.chptName = chpt.ChapterName
+  this.editchpt = true
+  this.chptId = chpt.id
+this.openModal('chapterModal')
+}
 
 
+
+Stringify(i:any){
+  return String(i)
+}
+AddFields(){
+
+}
+chptcode:any
+chptName:any
+updateChapter(e:any){
+  if(e.target.id=='chapterCode'){
+    this.chptcode = e.target.value
+  }else if(e.target.id == 'chaptername'){
+    this.chptName = e.target.value
+  }
+  console.log(this.chptcode,this.chptName)
+}
+
+createChapter(){
+  let createChapterBody={
+    chapterName:this.chptName,
+    chapterBody:this.chptcode,
+    ExamId:this.ExamId,
+    SubjectId:this.SubjectId,
+    method:'Create'
+  }
+  this.loader=true
+  this.restApi.UpsertChapter(createChapterBody).subscribe((res:any)=>{
+    console.log(res)
+    this.loader=false
+    this.step='ChapterConfigSubject'
+    if(res.Status){
+      this.openChaptersList(this.subjectSelected)
+    }else{
+      alert(res.message)
+    }
+  })
+  console.log(this.chptName,this.chptcode)
+}
+
+UpdateChapterAPI(){
+  let createChapterBody={
+    chapterName:this.chptName,
+    chapterBody:this.chptcode,
+    ExamId:this.ExamId,
+    SubjectId:this.SubjectId,
+    method:'Update',
+    id:this.chptId
+  }
+  this.loader=true
+  this.restApi.UpsertChapter(createChapterBody).subscribe((res:any)=>{
+    console.log(res)
+    this.loader=false
+    this.step='ChapterConfigSubject'
+    this.editchpt=false
+    if(res.Status){
+      this.openChaptersList(this.subjectSelected)
+    }else{
+      alert(res.message)
+    }
+  })
+}
+
+deleteChapter(chpt:any){
+  console.log(chpt)
+  let body = {
+    ChapterId:chpt.id
+  }
+  this.loader=true
+  this.restApi.deleteChapter(body).subscribe((res:any)=>{
+    this.loader=false
+    if(res.Status){
+      this.openChaptersList(this.subjectSelected)
+    }else{
+      alert(res.message)
+    }
+  })
+}
 }

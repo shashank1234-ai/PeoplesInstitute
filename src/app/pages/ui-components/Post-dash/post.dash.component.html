@@ -1,0 +1,51 @@
+<mat-card class="cardWithShadow theme-card">
+    <mat-card-header>
+      <mat-card-title class="m-b-0">My Posts</mat-card-title>
+      
+    </mat-card-header>
+    <div *ngIf="loader">
+      <img class="loadercls" src="../../../assets/loader.gif"/>
+    </div>
+    <mat-card-content class="b-t-1" *ngIf="!loader">
+      <div class="row">
+        
+        
+  
+        <div class="col-12">
+          <mat-card class="b-1 shadow-none">
+            <mat-card-content class="b-t-1">
+              <div class="row" style="justify-content: space-around;">
+              <mat-card class="col-4">
+                <mat-card-header style="margin:auto">
+                  <h2>Create an article</h2>
+                </mat-card-header>
+                <mat-card-content>
+                <span>
+                  You can create an article explaining, any topics in brief and even create video for particular article
+                </span>
+                </mat-card-content>
+                <mat-card-footer >
+                  <button style="margin: auto;margin-bottom: 3%;margin-left: 6%;" mat-flat-button color="primary" (click)="OpenPostCreate()" >Create</button>
+                </mat-card-footer>
+              </mat-card>
+              <mat-card class="col-4">
+                <mat-card-header style="margin:auto">
+                  <h2>Verify and Publish</h2>
+                </mat-card-header>
+                <mat-card-content>
+                <span>
+                  You can verify and publish the articles, Approving it will be available to Public
+                </span>
+                </mat-card-content>
+                <mat-card-footer><button mat-flat-button style="margin: auto;margin-bottom: 3%;margin-left: 6%;" color="primary" (click)="verifyPosts()">Verify</button></mat-card-footer>
+              </mat-card>
+            </div>
+            <div class="row">
+              
+            </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>

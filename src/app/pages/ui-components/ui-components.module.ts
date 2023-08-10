@@ -17,7 +17,11 @@ import { AppListsComponent } from './lists/lists.component';
 import { AppMenuComponent } from './menu/menu.component';
 import { AppTooltipsComponent } from './tooltips/tooltips.component';
 import { MatNativeDateModule } from '@angular/material/core';
-
+import { PostDashboardComponent } from './Post-dash/post.dash.component';
+import { CreatePostComponent } from './Post-dash/create-post/create-post.component';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import {VerifyPostComponent} from './Post-dash/verify-post/verify.post.component';
+import {TeamsComponent} from './Teams/teams.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -27,6 +31,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     ReactiveFormsModule,
     TablerIconsModule.pick(TablerIcons),
     MatNativeDateModule,
+    CKEditorModule
   ],
   declarations: [
     AppBadgeComponent,
@@ -34,6 +39,10 @@ import { MatNativeDateModule } from '@angular/material/core';
     AppListsComponent,
     AppMenuComponent,
     AppTooltipsComponent,
+    PostDashboardComponent,
+    CreatePostComponent,
+    VerifyPostComponent,
+    TeamsComponent
   ],
 })
 export class UicomponentsModule {}

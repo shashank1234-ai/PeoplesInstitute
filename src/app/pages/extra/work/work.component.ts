@@ -115,11 +115,13 @@ import { Exception } from 'sass';
 
         
         this.questionList = JSON.parse(workObj.ParsedDatasource)
+        console.log(this.questionList)
         for (let i=0;i<this.questionList.length;i++){
           // console.log(this.questionList[i].Question.length)
           console.log(i)
+
           console.log(this.questionList[i].Question)
-          if(this.questionList[i].Question.length>0){
+          if(this.questionList[i].Question.length>0 && this.questionList[i].options.length>=4){
             let opt:any
             try{
                opt = JSON.parse(this.questionList[i].options)

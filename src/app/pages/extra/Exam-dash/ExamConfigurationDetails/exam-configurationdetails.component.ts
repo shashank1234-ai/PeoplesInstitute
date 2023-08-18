@@ -372,6 +372,12 @@ SubjectName:any
 ChapterList:any
 SubjectId:any
 subjectSelected:any
+
+
+
+
+
+
 openChaptersList(subject:any){
   this.subjectSelected = subject
   this.SubjectName = subject.Subjectname
@@ -382,12 +388,26 @@ openChaptersList(subject:any){
     "ExamId":this.ExamId,
     "SubjectId":subject.subjectId
   }
+  this.loader=true
   this.restApi.getChaptersForExam(body).subscribe((res:any)=>{
     console.log(res)
+    this.loader=false
     console.log(res.data)
     if(res.Status){
       this.step = "ChapterConfigSubject"
       this.ChapterList=JSON.parse(res.data)
+      this.restApi.getQCountForWork(body).subscribe((res:any)=>{
+        console.log(res)
+         let q_count_data = JSON.parse(res.data)
+         for (let i=0;i<q_count_data.length;i++){
+          for (let j=0;j<this.ChapterList.length;j++){
+            if(this.ChapterList.id==q_count_data.id){
+              this.ChapterList.qCount = q_count_data.q_count
+            }
+          }
+         }
+         console.log(this.ChapterList)
+      })
     }
   })
 }

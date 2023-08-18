@@ -218,7 +218,7 @@
         <th>Sr No.</th>
         <th>Chapter Code</th>
         <th>Chapter Name</th>
-        <th>Total Questions</th>
+        <!-- <th>Number Of Questions</th> -->
         <th>Action</th>
       </tr>
   </thead>
@@ -233,9 +233,9 @@
         <td class="tbleCpt{{Stringify(i)}}">
           <span>{{chapter.ChapterName}}</span>
         </td>
-        <td>
-          {{chapter.Qcount}}
-        </td>
+        <!-- <td *ngIf="chapter.qCount!=undefined" class="tbleCpt{{Stringify(i)}}">
+          <span>{{chapter.qCount}}</span>
+        </td> -->
         <td class="tbleCpt{{Stringify(i)}}">
           <img src="../../../../../assets/images/icons/pencil.png" style="cursor:pointer" (click)="UpdateChapter(chapter,i)"/>
           <a style="color:red;font-weight:bold;font-size:x-large;cursor: pointer;" (click)="deleteChapter(chapter)">X</a>

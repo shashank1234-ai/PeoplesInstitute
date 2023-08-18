@@ -30,7 +30,7 @@ import { Exception } from 'sass';
         this.getSubjectSectionConfigurationUpload()
     }
     p: number = 1;
-
+    loader_new:boolean=false
     typesOfShoes:any=['NIKE','Jordans']
     folders:any=['folder1','folder2']
     notes:any=['note1','note2']
@@ -48,13 +48,19 @@ import { Exception } from 'sass';
           console.log(JSON.parse(resWork.data))
 
           this.myWorkData = JSON.parse(resWork.data)
+          let updated_data=[]
           for (let i=0;i<this.myWorkData.length;i++){
-            if((this.myWorkData[i].ParsedDatasource.length==0 || this.myWorkData[i].ParsedDatasource.length=="" || this.myWorkData[i].ParsedDatasource.length==undefined)&& this.myWorkData[i].verified){
-             let finish = this.myWorkData.splice(this.myWorkData[i],1)
-              this.finished_work.push(finish)
+            if(this.myWorkData[i].verified){
+              console.log(this.myWorkData[i])
+            //  let finish = this.myWorkData.splice(this.myWorkData[i],1)
+            //  console.log(finish)
+              this.finished_work.push(this.myWorkData[i])
+            }else{
+              updated_data.push(this.myWorkData[i])
             }
           }
           console.log(this.finished_work)
+          this.myWorkData = updated_data
           for (let i=0;i<this.myWorkData.length;i++){
             let workData=[]
            let completeNo = 0
@@ -109,22 +115,82 @@ import { Exception } from 'sass';
 
         
         this.questionList = JSON.parse(workObj.ParsedDatasource)
+        for (let i=0;i<this.questionList.length;i++){
+          // console.log(this.questionList[i].Question.length)
+          console.log(i)
+          console.log(this.questionList[i].Question)
+          if(this.questionList[i].Question.length>0){
+            let opt:any
+            try{
+               opt = JSON.parse(this.questionList[i].options)
+            }catch{
+               opt = this.questionList[i].options
+            }
+            // let opt=JSON.parse(this.questionList[i].options)!=undefined?JSON.parse(this.questionList[i].options):this.questionList[i].options
+            let updated_opt:any={}
+            let updated_opt_arr=[]
+            for (let k=0;k<4;k++){
+            if(this.questionList[i].options[k].optType!='image' && this.questionList[i].options[k].optType == undefined && typeof(this.questionList[i].options[k])!='object'){
+              updated_opt['optType'] = 'text'
+              updated_opt['opt'] = opt[k]
+              updated_opt_arr.push(updated_opt)
+              updated_opt={}
+              // this.questionList[i].options[k].optType='text'
+              // this.questionList[i].options[k].opt = opt[k]
+            }else{
+              updated_opt['optType'] = this.questionList[i].options[k].optType
+              updated_opt['opt'] = this.questionList[i].options[k].opt
+              updated_opt_arr.push(updated_opt)
+              updated_opt={}
+            }
+            }
+            this.questionList[i].options = updated_opt_arr
+            updated_opt_arr=[]
+          }
+        }
+        // }
         console.log(this.questionList)
         this.parseDsId = workObj.ParsedDatasource
         
         }else{
           this.questionList = JSON.parse(String(localStorage.getItem(workObj.parseDsId)))
           let updateQList =[]
-          for (let i=0;i<this.questionList.length;i++){
-            if(!this.questionList['verified']){
-              updateQList.push(this.questionList[i])
-            }
-          }
-          this.questionList = updateQList
-          updateQList=[]
+          // for (let i=0;i<this.questionList.length;i++){
+          //   if(!this.questionList['verified']){
+          //     updateQList.push(this.questionList[i])
+          //   }
+          // }
+          // this.questionList = updateQList
+          // updateQList=[]
           for (let i=0;i<this.questionList.length;i++){
             console.log(this.questionList[i].Question.length)
             if(this.questionList[i].Question.length>0){
+              let opt:any
+            try{
+               opt = JSON.parse(this.questionList[i].options)
+            }catch{
+               opt = this.questionList[i].options
+            }
+              // let opt=JSON.parse(this.questionList[i].options)!=undefined?JSON.parse(this.questionList[i].options):this.questionList[i].options
+              let updated_opt:any={}
+              let updated_opt_arr=[]
+              for (let k=0;k<4;k++){
+              if(this.questionList[i].options[k].optType!='image' && this.questionList[i].options[k].optType == undefined && typeof(this.questionList[i].options[k])!='object'){
+                updated_opt['optType'] = 'text'
+                updated_opt['opt'] = opt[k]
+                updated_opt_arr.push(updated_opt)
+                updated_opt={}
+                // this.questionList[i].options[k].optType='text'
+                // this.questionList[i].options[k].opt = opt[k]
+              }else{
+                updated_opt['optType'] = this.questionList[i].options[k].optType
+                updated_opt['opt'] = this.questionList[i].options[k].opt
+                updated_opt_arr.push(updated_opt)
+                updated_opt={}
+              }
+              }
+              this.questionList[i].options = updated_opt_arr
+              updated_opt_arr=[]
               updateQList.push(this.questionList[i])
             }
           }
@@ -149,6 +215,7 @@ import { Exception } from 'sass';
         console.log(workObj)
         this.parseDsId = workObj.parseDsId
         this.SubjectId = workObj.subjectId
+
         localStorage.setItem(this.parseDsId,JSON.stringify(this.questionList))
         // localStorage.setItem()
         if(this.dsType == 'subject_wise'){        
@@ -156,6 +223,19 @@ import { Exception } from 'sass';
         }
         if (this.dsType=='mock_test'){
           this.GetSubjectForExam(this.ExamId)
+        }
+        if(this.dsType=="chapter_wise"){
+          this.restApi.getFullDataWork(this.parseDsId).subscribe((res:any)=>{
+            console.log(JSON.parse(res.data))
+            for(let i=0;i<this.questionList.length;i++){
+              this.questionList[i]['ChapterId'] = JSON.parse(res.data)['ChapterId']
+              this.questionList[i]['SubjectId'] = JSON.parse(res.data)['SubjectId']
+              if(this.questionList[i]['Explaination']!=undefined || this.questionList[i]['Explaination']!=null || this.questionList[i]['Explaination']!=''){
+                this.questionList[i]['ExplainationType'] = 'Text'
+              }
+            }
+          })
+          
         }
         this.step='verifyQs'
       // }else if(state == 'continue'){
@@ -204,6 +284,7 @@ ChaptersList:any
     imageEdit:any
     EditQuestion(question:any,questIndex:any){
       console.log(question,questIndex)
+      this.questionList[questIndex-1]['verified']=false
       this.editIdx = questIndex
       this.questionEdit = question.Question
       this.options = question.options
@@ -221,13 +302,13 @@ ChaptersList:any
       if (field=='question'){
         this.questionEdit = e.target.value
       }else if(field == 'opt1'){
-        this.options[0] = e.target.value
+        this.options[0]['opt'] = e.target.value
       }else if(field == 'opt2'){
-        this.options[1] = e.target.value
+        this.options[1]['opt'] = e.target.value
       }else if (field == 'opt3'){
-        this.options[2] = e.target.value
+        this.options[2]['opt'] = e.target.value
       }else if(field == 'opt4'){
-        this.options[3] = e.target.value
+        this.options[3]['opt'] = e.target.value
       }
     }
 
@@ -246,6 +327,7 @@ closeEdit(){
   this.explainImage=''
   this.explainType=''
   this.explainUploadOption=''
+  this.optSelected=''
   }catch(e:any){
     console.log(e)
 
@@ -306,27 +388,37 @@ optTypeB:any
 optTypeC:any
 optTypeD:any
 ChangeOptType(e:any,field:any){
+  console.log(e.target.selectedOptions[0].value)
   if (field=='optA'){
+     
     this.optTypeA=e.target.selectedOptions[0].value
+    this.options[0]['optType'] = this.optTypeA
   }else if(field == 'optB'){
     this.optTypeB=e.target.selectedOptions[0].value
+    this.options[0]['optType'] = this.optTypeB
   }else if(field=='optC'){
     this.optTypeC=e.target.selectedOptions[0].value
+    this.options[0]['optType'] = this.optTypeC
   }else if(field=='optD'){
     this.optTypeD=e.target.selectedOptions[0].value
+    this.options[0]['optType'] = this.optTypeD
   }
 }
 
 OnEditJsonImage(e:any,field:any){
-  if(field=='opt1'){
-    this.options[0] = e.target.files[0]
-  }else if(field == 'opt2'){
-    this.options[1] = e.target.files[0]
-  }else if(field=='opt3'){
-    this.options[2] = e.target.files[0]
-  }else if(field=='opt4'){
-    this.options[3]=e.target.files[0]
-  }
+  this.fileService.convertToBase64(e.target.files[0]).then((res:any)=>{
+    console.log(res)
+    if(field=='opt1'){
+      this.options[0]['opt'] = res
+  
+    }else if(field == 'opt2'){
+      this.options[1]['opt'] = res
+    }else if(field=='opt3'){
+      this.options[2]['opt'] = res
+    }else if(field=='opt4'){
+      this.options[3]['opt']=res
+    }  })
+  
 
   
 }
@@ -343,10 +435,26 @@ UploadEdited(){
   console.log(this.myWorkData['datasourceType'],this.myWorkData['parseDsId'])
   // var size_upload = this.getSizeOfUpload(this.questionList)
   let body={}
+  let questions=[]
+  let questionsWithImage=[]
+  let QExplainWithImages=[]
   // if(size_upload<=1){
+    for (let i=0;i<this.questionList.length;i++){
+      // if(this.questionList[i][''])
+      if (this.questionList[i]['ExplainationType']=='image'){
+        QExplainWithImages.push(this.questionList[i])
+      }
+      else if(this.questionList[i]['image']!=undefined || this.questionList[i]['image']!=null || this.questionList[i]['image']!=''){
+        questionsWithImage.push(this.questionList[i])
+      }else{
+        questions.push(this.questionList)
+      }
+    }
     body={
       "ds_type":"pdf",
       "id":this.parseDsId,
+      // "QuestionWithImage":JSON.stringify(questionsWithImage),
+      // ""
       "ParsedDatasource":JSON.stringify(this.questionList),
       'verified':true
   
@@ -361,6 +469,7 @@ UploadEdited(){
     console.log(res)
     if(res.Status){
       alert("Updated Successfully")
+      this.step = 'listQ'
       localStorage.removeItem(this.parseDsId)
     }else{
       alert("Update Failed: "+res.message)
@@ -369,9 +478,11 @@ UploadEdited(){
   })
 }
 
+optSelected:any=""
 onSelectOption(e:any,idx:any){
   console.log(e.target.value)
-  this.questionList[idx-1]['answer']=e.target.value
+  console.log(this.optSelected)
+  this.questionList[idx-1]['answer']=this.optSelected
   console.log(this.questionList[idx-1])
   // localStorage.removeItem(this.parseDsId)
   // localStorage.setItem(this.parseDsId,this.questionList)
@@ -414,9 +525,9 @@ uploadImageToQuestion(e:any,p:any){
 ExamConfigurationData:any
 parsed_ds_format:any
 getSubjectSectionConfigurationUpload(){
-  this.loader=true
+  this.loader_new=true
   this.restApi.getSubjectSectionDSForVerify(JSON.parse(String(sessionStorage.getItem('UserDetails'))).id).subscribe((res:any)=>{
-    this.loader=false
+    this.loader_new=false
     console.log(res)
     if(res.Status){
       console.log(JSON.parse(res.data))
@@ -646,7 +757,15 @@ this.onUploadExplainFile(this.explainFile,this.editIdx,this.explainUploadOption)
 
   clearLocalStorageAndPushToDb(){
     let questionList = localStorage.getItem(this.parseDsId)
+    console.log("HI")
+    this.loader=true
+    for(let i=0;i<JSON.parse(String(questionList)).length;i++){
+      let opts = JSON.stringify(JSON.parse(String(questionList))[i].options)
+      JSON.parse(String(questionList))[i].options = opts
+      opts=""
+    }
     console.log(JSON.parse(String(questionList)))
+
    let  body={
       "ds_type":"pdf",
       "id":this.parseDsId,
@@ -666,6 +785,26 @@ this.onUploadExplainFile(this.explainFile,this.editIdx,this.explainUploadOption)
         alert(res.message)
       }
     })
+  }
+
+  deleteOpt(idx:any){
+    let id:any
+    if(idx=='opt1')
+    {
+      id = 0
+    }else if(idx=='opt2'){
+      id=1
+    }else if(idx=='opt3'){
+      id=2
+    }else if(idx == 'opt4'){
+      id=3
+    }
+    this.options[id]['opt'] = ''
+  }
+  onchangePage(p:any){
+    console.log(p)
+    // this.optSelected = this.questionList[p-1].answer!=undefined ? this.questionList[p-1].answer:''
+    // this.selecte
   }
 }
   

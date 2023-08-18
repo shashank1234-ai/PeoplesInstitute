@@ -6,10 +6,10 @@
 
 </mat-card-content>
 </mat-card> -->
-<div *ngIf="loader">
+<div *ngIf="loader || loader_new">
     <img class="loadercls" src="../../../assets/loader.gif"/>
   </div>
-<mat-card *ngIf="!loader" class="cardWithShadow theme-card">
+<mat-card *ngIf="!loader && !loader_new" class="cardWithShadow theme-card">
     <mat-card-header>
       <mat-card-title class="m-b-0">My Work</mat-card-title>
     </mat-card-header>
@@ -37,27 +37,12 @@
             <span>Nothing here yet come back once you upload data</span>
            </div>
           </mat-card>
-          </div>
-         
-      </div>
+          </div>  
       <div class="col-12" >
         <mat-card class="b-1 shadow-none">
          <mat-card-header>
             <mat-card-title>Exam Section Configuration Upload</mat-card-title>
           </mat-card-header>
-
-            <!-- <mat-list>
-              <mat-list-item *ngFor="let work of myWorkData">
-                <mat-icon matListItemIcon>note</mat-icon>
-                <div matListItemTitle class="mat-body-2 f-w-600">{{ work.filename }}</div>
-                <div matListItemLine class="f-s-14 mat-body-1">{{ work.fileurl }}</div>
-                <div matListItemLine class="f-s-14 mat-body-1" style="color:green;font-size:large;font-weight:bolder">{{work.completePercentage}}% Complete 
-                  <a style="color:blue;text-decoration: underline;cursor:pointer" *ngIf="work.completePercentage==0" (click)="startVerify(work,'new')">Start</a>
-                  <a style="color:blue;text-decoration: underline;cursor: pointer;" *ngIf="work.completePercentage!=0" (click)="startVerify(work,'continue')">Continue</a>
-              </div>
-              </mat-list-item>
-            </mat-list> -->
-
             <mat-expansion-panel *ngFor="let examConfig of ExamConfigurationData;let i = index">
               <mat-expansion-panel-header>
                 <mat-panel-title style="font-size: 1rem;">{{examConfig.ExamData.ExamName}}</mat-panel-title>
@@ -90,6 +75,23 @@
             </div>
           </mat-card>
       </div>
+      <div *ngIf="finished_work.length>0" class="col-12">
+        <mat-card class="b-1 shadow-none">
+          <mat-card-header>
+            <mat-card-title>Finished Work</mat-card-title>
+          </mat-card-header>
+            <mat-list>
+              <mat-list-item *ngFor="let fwork of finished_work">
+                
+                <mat-icon matListItemIcon>note</mat-icon>
+                <div matListItemTitle class="mat-body-2 f-w-600">{{ fwork.filename }}</div>
+                <!-- <div matListItemLine class="f-s-14 mat-body-1">{{ fwork.fileurl }}</div> -->
+              </mat-list-item>
+            </mat-list>
+        </mat-card>
+        </div>  
+    </div>
+
     </mat-card-content>
     <mat-card-content class="b-t-1 col-lg-12" *ngIf="step=='verifyQs'">
       <div *ngIf="!edit" (click)="BackToListing()" style="float: right;position: absolute;right: -145px;cursor: pointer;">
@@ -118,13 +120,19 @@
             </div>
             <div *ngFor="let opt of quest.options;let j= index">
               <!-- <li >{{opt}}</li>-->
-              <input  type="radio" class="customradio" value="{{j}}" (change)="onSelectOption($event,p)"/><p>
-                {{opt}}
+              <!-- <p>{{opt['optType']}}</p> -->
+              <input *ngIf="opt.optType=='text'"  type="radio" class="customradio" [(ngModel)]="optSelected" value="{{j}}" (change)="onSelectOption($event,p)"/>
+              <p *ngIf="opt.optType=='text'">
+                {{opt.opt}}
+              </p>
+              <input *ngIf="opt.optType=='image'"  type="radio" class="customradio" [(ngModel)]="optSelected" value="{{j}}" (change)="onSelectOption($event,p)"/>
+              <p>
+               <img *ngIf="opt.optType=='image'" [src]="basedecode(opt.opt)" class="form-control" style="width:30%"/>
               </p>
             </div>
             <div *ngIf="dsType=='subject_wise'" style="width:50%">
               <label>Select Chapter</label>
-              <select class="form-control" (change)="OnSelectChpt($event,p)">
+              <select class="form-control"  (change)="OnSelectChpt($event,p)">
                 <option value="">
                   Please Select
                 </option>
@@ -188,20 +196,71 @@
             <label>
               Option A
             </label>
-            <input type="text" class="form-control" value="{{options[0]}}" (blur)="onEditJson($event,'opt1')" />
-
+            <input  type="text" *ngIf="options[0]['opt']!='' && options[0]['optType']=='text'" class="form-control" value="{{options[0]['opt']}}" (blur)="onEditJson($event,'opt1')" />
+            <div>
+            <img *ngIf="options[0]['optType']=='image' && options[0]['opt']!=''" [src]="basedecode(options[0]['opt'])"/>
+            <span *ngIf="options[0]['optType']=='image'" style="color:red;font-size:large;cursor:pointer" (click)="deleteOpt('opt1')">X</span>
+          </div>
+            <div class="row" *ngIf="options[0]['opt']==''">
+              <select class="form-control col-lg-6" (change)="ChangeOptType($event,'optA')">
+                <option value="">Select Option Type</option>
+                <option value="text">Text</option>
+                <option value="image">Image</option>
+              </select>
+              <input  *ngIf="options[0]['optType']=='text'" placeholder="Type Option A" type="text" class="form-control col-lg-6" value="{{options[0]['opt']}}" (blur)="onEditJson($event,'opt1')" />
+              <input  *ngIf="options[0]['optType']=='image'" accept="image/*" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt1')"/>
+            </div>
             <label>
               Option B
             </label>
-            <input type="text" class="form-control" value="{{options[1]}}" (blur)="onEditJson($event,'opt2')"  />
+            <input  type="text" *ngIf="options[0]['opt']!='' && options[1]['optType']=='text'" class="form-control" value="{{options[1]['opt']}}" (blur)="onEditJson($event,'opt2')" />
+            <div>
+            <img *ngIf="options[1]['optType']=='image' && options[1]['opt']!=''" [src]="basedecode(options[1]['opt'])"/>
+            <span *ngIf="options[1]['optType']=='image'" style="color:red;font-size:large;cursor:pointer" (click)="deleteOpt('opt2')">X</span>
+          </div>
+            <div class="row" *ngIf="options[1]['opt']==''">
+              <select class="form-control col-lg-6" (change)="ChangeOptType($event,'optB')">
+                <option value="">Select Option Type</option>
+                <option value="text">Text</option>
+                <option value="image">Image</option>
+              </select>
+              <input  *ngIf="options[1]['optType']=='text'" placeholder="Type Option B" type="text" class="form-control col-lg-6" value="{{options[1]['opt']}}" (blur)="onEditJson($event,'opt2')" />
+              <input  *ngIf="options[1]['optType']=='image'" accept="image/*" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt2')"/>
+            </div>
             <label>
               Option C
             </label>
-            <input type="text" class="form-control" value="{{options[2]}}" (blur)="onEditJson($event,'opt3')"  />
+            <input  type="text" *ngIf="options[2]['opt']!='' && options[2]['optType']=='text'" class="form-control" value="{{options[2]['opt']}}" (blur)="onEditJson($event,'opt3')" />
+            <div>
+            <img *ngIf="options[2]['optType']=='image' && options[2]['opt']!=''" [src]="basedecode(options[2]['opt'])"/>
+            <span *ngIf="options[2]['optType']=='image'" style="color:red;font-size:large;cursor:pointer" (click)="deleteOpt('opt3')">X</span>
+          </div>
+            <div class="row" *ngIf="options[2]['opt']==''">
+              <select class="form-control col-lg-6" (change)="ChangeOptType($event,'optC')">
+                <option value="">Select Option Type</option>
+                <option value="text">Text</option>
+                <option value="image">Image</option>
+              </select>
+              <input  *ngIf="options[2]['optType']=='text'" placeholder="Type Option C" type="text" class="form-control col-lg-6" value="{{options[2]['opt']}}" (blur)="onEditJson($event,'opt3')" />
+              <input  *ngIf="options[2]['optType']=='image'" accept="image/*" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt3')"/>
+            </div>
             <label>
               Option D
             </label>
-            <input type="text" class="form-control" value="{{options[3]}}" (blur)="onEditJson($event,'opt4')"  />
+            <input  type="text" *ngIf="options[3]['opt']!='' && options[3]['optType']=='text'" class="form-control" value="{{options[3]['opt']}}" (blur)="onEditJson($event,'opt4')" />
+            <div>
+            <img *ngIf="options[3]['optType']=='image' && options[3]['opt']!=''" [src]="basedecode(options[3]['opt'])"/>
+            <span *ngIf="options[3]['optType']=='image'" style="color:red;font-size:large;cursor:pointer" (click)="deleteOpt('opt4')">X</span>
+          </div>
+            <div class="row" *ngIf="options[3]['opt']==''">
+              <select class="form-control col-lg-6" (change)="ChangeOptType($event,'optD')">
+                <option value="">Select Option Type</option>
+                <option value="text">Text</option>
+                <option value="image">Image</option>
+              </select>
+              <input  *ngIf="options[3]['optType']=='text'" placeholder="Type Option D" type="text" class="form-control col-lg-6" value="{{options[3]['opt']}}" (blur)="onEditJson($event,'opt4')" />
+              <input  *ngIf="options[3]['optType']=='image'" accept="image/*" type="file" class="form-control col-lg-6" (blur)="OnEditJsonImage($event,'opt4')"/>
+            </div>
           </div>
           <div *ngIf="options.length!=4">
             <label>
@@ -340,7 +399,7 @@
       <pdf-viewer [src]="pdfSrc"  [render-text]="true"></pdf-viewer>
 
     </div> -->
-    <pagination-controls *ngIf="!edit && step=='verifyQs'" style="margin: auto;margin-bottom: 3%;margin-top: 10%;" previousLabel="" nextLabel="" (pageChange)="p=$event">
+    <pagination-controls *ngIf="!edit && step=='verifyQs'" style="margin: auto;margin-bottom: 3%;margin-top: 10%;" previousLabel="" nextLabel="" (pageChange)="p=$event" (click)="onchangePage(p)">
 
     </pagination-controls>
   </mat-card>

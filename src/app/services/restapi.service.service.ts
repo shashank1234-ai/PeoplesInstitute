@@ -122,4 +122,12 @@ headers:any={"ngrok-skip-browser-warning":"69420"}
   partialUpdateDs(body:any){
     return this.http.post(env.environment.apiUrl+'Datasource/update_partial_work',body)
   }
+
+  getFullDataWork(parseDs:any){
+    return this.http.get(env.environment.apiUrl+'Work/get_work_data?ds_id='+parseDs)
+  }
+
+  getQCountForWork(body:any){
+    return this.http.post(env.environment.apiUrl+'Subject/get_q_count',body)
+  }
 }

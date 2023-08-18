@@ -382,6 +382,17 @@
         <img style="width:75%;" src="../../../assets/images/templates/template2.png" />
         <input type="radio" style="margin-top:3%" [(ngModel)]="templateSelected" value="template2" (select)="OnSelectTemplate($event)"/>
       </div>
+      <div style="display:flex;flex-direction: column;">
+        <span>Template 3</span>
+        <img style="width:75%;" src="../../../assets/images/templates/template3.png" />
+        <input type="radio" style="margin-top:3%" [(ngModel)]="templateSelected" value="template3" (select)="OnSelectTemplate($event)"/>
+      </div>
+      <div style="display:flex;flex-direction: column;">
+        <span>Template 4</span>
+        <img style="width:75%;" src="../../../assets/images/templates/template4.png" />
+        <input type="radio" style="margin-top:3%" [(ngModel)]="templateSelected" value="template4" (select)="OnSelectTemplate($event)"/>
+      </div>
+      
     </section>
 		<footer class="modal-container-footer">
       <p style="color: red;margin-left: 3%;font-size: large;font-weight: bold;">{{uploadError}}</p>

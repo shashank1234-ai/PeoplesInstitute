@@ -570,7 +570,7 @@ this.examSubMap = res.data
             this.loader=false
             console.log(res_)
             if(res_.Status){
-              let final_submit_return = res_
+              let final_submit_return = resupload
               var DsTypeMap={
                 "ExamId":this.examId,
                 "datasourceId":final_submit_return.data,

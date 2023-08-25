@@ -130,4 +130,8 @@ headers:any={"ngrok-skip-browser-warning":"69420"}
   getQCountForWork(body:any){
     return this.http.post(env.environment.apiUrl+'Subject/get_q_count',body)
   }
+
+  getFixedQuestion(body:any){
+    return this.http.post(env.environment.apiUrl+'Datasource/fix_question',body)
+  }
 }

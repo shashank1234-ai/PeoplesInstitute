@@ -163,7 +163,11 @@
               </select>
             </div>
             </div>
-            <div *ngIf="quest.Explaination!=undefined">
+            <div style="margin-top: 3%;">
+              <p style="font-weight:bold;font-size:large">Answer</p>
+              <span>Option ({{ReturnInt(quest.answer)+1}})</span>
+            </div>
+            <div *ngIf="quest.Explaination!=undefined" style="margin-top:2%">
               <p style="font-weight: bold;font-size:large">Explaination:</p>
               <span *ngIf="quest.ExplainationType=='Image'">
                 <p>
@@ -187,6 +191,13 @@
             <span *ngIf="editError" style="color:red;font-weight:bold;font-size:large">{{editError}}</span>
             <div>
               <span (click)="closeEdit()" class="close-btn">X</span>
+            </div>
+            <!-- <div>
+              <button class="form-control" (click)="fixUsingAI(p)">Fix using AI</button>
+            </div> -->
+            <div style="border: 1px solid grey;width: 20%;border-radius: 15px;cursor: pointer;background-color: rgb(255, 174, 0);height: 50px;" (click)="fixUsingAI(p)">
+              <img style="width: 5%;position: absolute;top: 0;" src="../../../../assets/images/icons/sparkles.png"/>
+              <span style="position: absolute;left: 8%;top: 14px;font-weight: bold;font-size: large;">Fix Using AI</span>
             </div>
             <label style="font-weight:bold;font-size: large;">Question</label>
             <input type="text" class="form-control" width="30%" value="{{questionEdit}}" (blur)="onEditJson($event,'question')"/>
@@ -213,7 +224,7 @@
             <label>
               Option B
             </label>
-            <input  type="text" *ngIf="options[0]['opt']!='' && options[1]['optType']=='text'" class="form-control" value="{{options[1]['opt']}}" (blur)="onEditJson($event,'opt2')" />
+            <input  type="text" *ngIf="options[1]['opt']!='' && options[1]['optType']=='text'" class="form-control" value="{{options[1]['opt']}}" (blur)="onEditJson($event,'opt2')" />
             <div>
             <img *ngIf="options[1]['optType']=='image' && options[1]['opt']!=''" [src]="basedecode(options[1]['opt'])"/>
             <span *ngIf="options[1]['optType']=='image'" style="color:red;font-size:large;cursor:pointer" (click)="deleteOpt('opt2')">X</span>
@@ -350,6 +361,7 @@
         </div>
             </div>
           </div>
+          
           <button  class="form-control success" style="margin-top:3%" (click)="submitEdit()" *ngIf="edit">Submit</button>
             
           </div>
@@ -361,27 +373,29 @@
         </div>
         
         <!-- </div> -->
-        <div class="modal" id="parseModal">
+        <div class="modal" id="promptModal" *ngIf="showPrompt">
           <article class="modal-container">
             <header class="modal-container-header">
               <h1 class="modal-container-title">
                         <img src="../../../../../assets/images/icons/clipboard.png" style="width: 10%;"/>
-                        Choose Option
+                        Generated JSON
                       </h1>
-              <a class="icon-button close" (click)="closeModal('parseModal')">
+              <a class="icon-button close" (click)="closeModal('promptModal')">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                   <path fill="none" d="M0 0h24v24H0z" />
                   <path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                 </svg>
               </a>
-              <div>
-                <!-- <h3 style="cursor:pointer;font-weight:bolder" ></h3> -->
-                
-              </div>
+              
             </header>
             <section class="modal-container-body rtf">
                     
-        
+              <div>
+                <!-- <h3 style="cursor:pointer;font-weight:bolder" ></h3> -->
+                <textarea class="form-control" cols="100" rows="10">
+                  {{generatedText}}
+                </textarea>
+              </div>
                    
                   <!-- Select Chapters on selecting subject -->
                  

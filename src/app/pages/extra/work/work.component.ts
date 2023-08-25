@@ -44,6 +44,7 @@ import { Exception } from 'sass';
       this.restApi.getMyWork(UserId).subscribe((resWork:any)=>{
         this.loader=false
         console.log(resWork)
+        this.finished_work=[]
         if(resWork.Status){
           console.log(JSON.parse(resWork.data))
 
@@ -116,6 +117,13 @@ import { Exception } from 'sass';
         
         this.questionList = JSON.parse(workObj.ParsedDatasource)
         console.log(this.questionList)
+        var updated_data:any=[]
+        for (let i=0;i< this.questionList.length;i++){
+          if(this.questionList[i].Question.length>0 && this.questionList[i].options!=undefined && this.questionList[i].options.length>0){
+            updated_data.push(this.questionList[i])
+          }
+        }
+        this.questionList = updated_data
         for (let i=0;i<this.questionList.length;i++){
           // console.log(this.questionList[i].Question.length)
           console.log(i)
@@ -134,14 +142,14 @@ import { Exception } from 'sass';
             for (let k=0;k<4;k++){
             if(this.questionList[i].options[k].optType!='image' && this.questionList[i].options[k].optType == undefined && typeof(this.questionList[i].options[k])!='object'){
               updated_opt['optType'] = 'text'
-              updated_opt['opt'] = opt[k]
+              updated_opt['opt'] = opt[k]!=undefined?opt[k]:""
               updated_opt_arr.push(updated_opt)
               updated_opt={}
               // this.questionList[i].options[k].optType='text'
               // this.questionList[i].options[k].opt = opt[k]
             }else{
-              updated_opt['optType'] = this.questionList[i].options[k].optType
-              updated_opt['opt'] = this.questionList[i].options[k].opt
+              updated_opt['optType'] = this.questionList[i].options[k].optType!=undefined? this.questionList[i].options[k].optType:"text"
+              updated_opt['opt'] = this.questionList[i].options[k].opt!=undefined?this.questionList[i].options[k].opt:''
               updated_opt_arr.push(updated_opt)
               updated_opt={}
             }
@@ -156,6 +164,13 @@ import { Exception } from 'sass';
         
         }else{
           this.questionList = JSON.parse(String(localStorage.getItem(workObj.parseDsId)))
+          var updated_data:any=[]
+        for (let i=0;i< this.questionList.length;i++){
+          if(this.questionList[i].Question.length>0 && this.questionList[i].options !=undefined && this.questionList[i].options.length>0){
+            updated_data.push(this.questionList[i])
+          }
+        }
+        this.questionList = updated_data
           let updateQList =[]
           // for (let i=0;i<this.questionList.length;i++){
           //   if(!this.questionList['verified']){
@@ -177,19 +192,26 @@ import { Exception } from 'sass';
               let updated_opt:any={}
               let updated_opt_arr=[]
               for (let k=0;k<4;k++){
+                try{
               if(this.questionList[i].options[k].optType!='image' && this.questionList[i].options[k].optType == undefined && typeof(this.questionList[i].options[k])!='object'){
                 updated_opt['optType'] = 'text'
-                updated_opt['opt'] = opt[k]
+                updated_opt['opt'] = opt[k]!=undefined?opt[k]:''
                 updated_opt_arr.push(updated_opt)
                 updated_opt={}
                 // this.questionList[i].options[k].optType='text'
                 // this.questionList[i].options[k].opt = opt[k]
               }else{
-                updated_opt['optType'] = this.questionList[i].options[k].optType
-                updated_opt['opt'] = this.questionList[i].options[k].opt
+                updated_opt['optType'] = this.questionList[i].options[k].optType!=undefined?this.questionList[i].options[k].optType:"text"
+                updated_opt['opt'] = this.questionList[i].options[k].opt!=undefined?this.questionList[i].options[k].opt:""
                 updated_opt_arr.push(updated_opt)
                 updated_opt={}
               }
+            }catch{
+              updated_data['optType']='text'
+              updated_data['opt']=''
+              updated_opt_arr.push(updated_opt)
+              updated_opt={}
+            }
               }
               this.questionList[i].options = updated_opt_arr
               updated_opt_arr=[]
@@ -218,7 +240,6 @@ import { Exception } from 'sass';
         this.parseDsId = workObj.parseDsId
         this.SubjectId = workObj.subjectId
 
-        localStorage.setItem(this.parseDsId,JSON.stringify(this.questionList))
         // localStorage.setItem()
         if(this.dsType == 'subject_wise'){        
         this.getChForSubject(this.ExamId,this.SubjectId)
@@ -239,6 +260,9 @@ import { Exception } from 'sass';
           })
           
         }
+        console.log(this.questionList)
+        localStorage.setItem(this.parseDsId,JSON.stringify(this.questionList))
+
         this.step='verifyQs'
       // }else if(state == 'continue'){
       // //  let data = localStorage.getItem(workObj.parseDsId)
@@ -284,6 +308,7 @@ ChaptersList:any
     edit:any
     editIdx:any
     imageEdit:any
+    EditQuestion_obj:any={}
     EditQuestion(question:any,questIndex:any){
       console.log(question,questIndex)
       this.questionList[questIndex-1]['verified']=false
@@ -292,6 +317,10 @@ ChaptersList:any
       this.options = question.options
       this.explainationForQuestion = question.Explaination
       this.explainType = question.ExplainationType=='Image'?'image':'text'
+      this.EditQuestion_obj['Question'] = this.questionEdit
+      this.EditQuestion_obj['options']=this.options
+      // this.EditQuestion_obj['Explaination']=this.explainationForQuestion
+      
       this.edit=true
       if(question.image){
         this.imageEdit = question.image
@@ -334,6 +363,21 @@ closeEdit(){
     console.log(e)
 
   }
+}
+
+clearFields(){
+  this.questionEdit=''
+  this.options=[]
+  this.editError=''
+  this.explainationForQuestion=''
+  this.explainFile=''
+  this.explainImage=''
+  this.explainType=''
+  this.explainUploadOption=''
+  this.optSelected=''
+  this.isexplainParse=false
+  this.dsType=''
+
 }
 editError:any
 submitEdit(){
@@ -397,13 +441,13 @@ ChangeOptType(e:any,field:any){
     this.options[0]['optType'] = this.optTypeA
   }else if(field == 'optB'){
     this.optTypeB=e.target.selectedOptions[0].value
-    this.options[0]['optType'] = this.optTypeB
+    this.options[1]['optType'] = this.optTypeB
   }else if(field=='optC'){
     this.optTypeC=e.target.selectedOptions[0].value
-    this.options[0]['optType'] = this.optTypeC
+    this.options[2]['optType'] = this.optTypeC
   }else if(field=='optD'){
     this.optTypeD=e.target.selectedOptions[0].value
-    this.options[0]['optType'] = this.optTypeD
+    this.options[3]['optType'] = this.optTypeD
   }
 }
 
@@ -486,8 +530,13 @@ onSelectOption(e:any,idx:any){
   console.log(this.optSelected)
   this.questionList[idx-1]['answer']=this.optSelected
   console.log(this.questionList[idx-1])
+
   // localStorage.removeItem(this.parseDsId)
   // localStorage.setItem(this.parseDsId,this.questionList)
+}
+
+ReturnInt(str:any){
+  return Number(str);
 }
 approveError:any
 ApproveQuestion(quest:any,ids:any){
@@ -499,7 +548,13 @@ ApproveQuestion(quest:any,ids:any){
     this.approveError = "Please Provide Explaination by clicking on Edit"
   }else if(this.dsType=='subject_wise' &&(this.questionList[ids-1]['ChapterId'] ==undefined || this.questionList[ids-1]['ChapterName']==undefined || this.questionList[ids-1]['ChapterId']==null || this.questionList[ids-1]['ChapterName']==null)){
     this.approveError = "Please Select Chapter"
-  }
+  }else if(this.dsType == 'mock_test' && (this.SubjectId == null || this.SubjectId==undefined || this.SubjectId == '')){
+    // if(this.SubjectId == null || this.SubjectId==undefined || this.SubjectId == ''){
+      this.approveError = "Please select Subject"
+    }
+    else if( this.dsType == 'mock_test' && (this.questionList[ids-1]['ChapterId'] == null || this.questionList[ids-1]['ChapterId']==undefined || this.questionList['ChapterId'] == '')){
+      this.approveError="Please select Chapter"
+    }
   else{
     this.approveError=''
     this.questionList[ids-1]['verified']=true
@@ -807,6 +862,39 @@ this.onUploadExplainFile(this.explainFile,this.editIdx,this.explainUploadOption)
     console.log(p)
     // this.optSelected = this.questionList[p-1].answer!=undefined ? this.questionList[p-1].answer:''
     // this.selecte
+  }
+  generatedText:any=""
+  showPrompt:boolean=false
+  fixUsingAI(idx:any){
+    let body = {QData:JSON.stringify(this.EditQuestion_obj)}
+    this.loader=true
+    this.restApi.getFixedQuestion(body).subscribe((res:any)=>{
+      console.log(res)
+this.loader=false
+      try{
+      console.log(JSON.parse(res.data)) 
+      if(res.Status){
+        this.explainationForQuestion = JSON.parse(res.data).Explaination!=undefined?JSON.parse(res.data).Explaination:JSON.parse(res.data).Explanation!=undefined?JSON.parse(res.data).Explanation:JSON.parse(res.data).explaination!=undefined?JSON.parse(res.data).explaination:JSON.parse(res.data).explanation!=undefined?JSON.parse(res.data).explanation:'';
+        // this.questionEdit = JSON.parse(res.data).Question
+        this.questionEdit = JSON.parse(res.data).Question!=undefined?JSON.parse(res.data).Question:JSON.parse(res.data).question!=undefined?JSON.parse(res.data).question:this.EditQuestion_obj.Question
+        this.options = JSON.parse(res.data).options!=undefined?JSON.parse(res.data).options:JSON.parse(res.data).Options!=undefined?JSON.parse(res.data).Options:this.EditQuestion_obj.options
+        this.questionList[idx-1]['answer'] =Number(JSON.parse(res.data).answer)!=undefined? Number(JSON.parse(res.data).answer)-1:JSON.parse(res.data).answer.toLowerCase() =='a'?0:JSON.parse(res.data).answer.toLowerCase() =='b'?1:JSON.parse(res.data).answer.toLowerCase() =='c'?2:JSON.parse(res.data).answer.toLowerCase() =='d'?3:NaN
+        this.questionList[idx-1]['Explaination'] = this.explainationForQuestion
+        this.questionList[idx-1]['options']=this.options
+        console.log(this.questionList[idx-1])
+      }
+    }catch(e:any){
+      console.log(e)
+      // console.log(err)
+      // give pop up with error or with generated prompt
+      // let modal = this.document.getElementById('promptModal')
+      // modal.style.display = 'block'
+      this.showPrompt=true
+      this.generatedText = (res.data)
+    }
+    }
+    )
+  
   }
 }
   

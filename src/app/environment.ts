@@ -10,8 +10,9 @@ export const environment={
   measurementId: "G-QVHBYKDY1B"
     },
     apiUrl:"http://127.0.0.1:4000/", //local end point
-    // apiUrl:"https://7ae0-3-110-90-131.ngrok-free.app/", //secure end point
+    
     // apiUrl:"http://ec2-3-110-90-131.ap-south-1.compute.amazonaws.com:4000/", //unsecure end point
+    // apiUrl:"https://998a-3-109-121-120.ngrok-free.app/",
     STORAGE_PATH :'people-s-institue.appspot.com'
 
 }

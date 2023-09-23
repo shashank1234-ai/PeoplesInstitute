@@ -108,7 +108,7 @@ export class ExamConfigurationComponent implements OnInit{
         let examEditData = JSON.parse(String(sessionStorage.getItem('ExamEdit')))
         this.ExamName = examEditData.ExamName
         this.Examlevel = examEditData.level
-        this.Classes = examEditData.class.join(',')
+        // this.Classes = examEditData.class.join(',')
         sessionStorage.removeItem('ExamEdit')
         let url = window.location.href
         this.ExamId = url.split('/')[url.split('/').length-1]

@@ -28,7 +28,10 @@
               "src/styles.scss",
               "src/assets/scss/style.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/mathjax/es5/tex-mml-chtml.js"
+
+            ]
           },
           "configurations": {
             "production": {

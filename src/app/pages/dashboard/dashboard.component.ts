@@ -559,7 +559,10 @@ this.examSubMap = res.data
               })
             }
           })
-        }else{
+        }else if(this.dsFormat=="textbook"){
+          // upload textbook
+        }
+        else{
           let body ={
             file_url:this.shortLink,
             ds_type:this.dsFormat,

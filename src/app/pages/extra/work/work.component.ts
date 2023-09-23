@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { RestapiServiceService } from 'src/app/services/restapi.service.service';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { environment } from 'src/app/environment';
 import { FileUploadService } from 'src/app/services/FileService/file.upload.service';
 import { DOCUMENT } from '@angular/common';
 import { Exception } from 'sass';
@@ -126,9 +125,9 @@ import { Exception } from 'sass';
         this.questionList = updated_data
         for (let i=0;i<this.questionList.length;i++){
           // console.log(this.questionList[i].Question.length)
-          console.log(i)
+          // console.log(i)
 
-          console.log(this.questionList[i].Question)
+          // console.log(this.questionList[i].Question)
           if(this.questionList[i].Question.length>0 && this.questionList[i].options.length>=4){
             let opt:any
             try{
@@ -180,7 +179,7 @@ import { Exception } from 'sass';
           // this.questionList = updateQList
           // updateQList=[]
           for (let i=0;i<this.questionList.length;i++){
-            console.log(this.questionList[i].Question.length)
+            // console.log(this.questionList[i].Question.length)
             if(this.questionList[i].Question.length>0){
               let opt:any
             try{
@@ -394,7 +393,7 @@ submitEdit(){
   }
   if(this.editError==''){
       for(let i=0;i<this.options.length;i++){
-        if (typeof(this.options[i])=='object'){
+        if (typeof(this.options[i])=='object' && this.options[i]['optType']=="image"){
         this.fileService.convertToBase64(this.options[i]).then((res:any)=>{
           console.log(res)
           this.options[i] = res
@@ -516,7 +515,10 @@ UploadEdited(){
     if(res.Status){
       alert("Updated Successfully")
       this.step = 'listQ'
+      if (localStorage.getItem(this.parseDsId)!=undefined){
       localStorage.removeItem(this.parseDsId)
+      }
+      // this.getMyWork()
     }else{
       alert("Update Failed: "+res.message)
     }
@@ -882,6 +884,7 @@ this.loader=false
         this.questionList[idx-1]['Explaination'] = this.explainationForQuestion
         this.questionList[idx-1]['options']=this.options
         console.log(this.questionList[idx-1])
+        this.showPrompt=false
       }
     }catch(e:any){
       console.log(e)
@@ -895,6 +898,26 @@ this.loader=false
     }
     )
   
+  }
+  Onselectdifficulty(e:any,idx:any){
+    console.log(e,idx)
+    this.questionList[idx-1]["difficulty_level"] = e.target.value
+    console.log(this.questionList[idx-1])
+  }
+
+  bulkSubmit(){
+    console.log(this.myWorkData)
+    try{
+    for (let i=0;i<this.myWorkData.length;i++){
+
+      this.parseDsId = this.myWorkData[i]["dsMasterId"]
+      console.log("started "+this.parseDsId)
+      this.questionList=JSON.parse(this.myWorkData[i]["ParsedDatasource"])
+      this.UploadEdited()
+    }
+  }catch(e:any){
+console.log(e)
+  }
   }
 }
   

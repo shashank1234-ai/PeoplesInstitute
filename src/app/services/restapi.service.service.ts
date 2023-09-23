@@ -134,4 +134,5 @@ headers:any={"ngrok-skip-browser-warning":"69420"}
   getFixedQuestion(body:any){
     return this.http.post(env.environment.apiUrl+'Datasource/fix_question',body)
   }
+  nativeglobal(){return window}
 }

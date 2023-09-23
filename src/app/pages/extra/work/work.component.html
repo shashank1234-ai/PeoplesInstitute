@@ -20,10 +20,14 @@
             <mat-card-header>
               <mat-card-title>DataSource Upload</mat-card-title>
             </mat-card-header>
+            <div>
+              <button class="form-control col-md-3" (click)="bulkSubmit()">Submit All</button>
+            </div>
               <mat-list *ngIf="myWorkData.length>0">
                 <mat-list-item *ngFor="let work of myWorkData">
                   
                   <mat-icon matListItemIcon>note</mat-icon>
+                  <!-- <div><radio class="form-control" (click)="bulkSubmit(work)"></radio></div> -->
                   <div matListItemTitle class="mat-body-2 f-w-600">{{ work.filename }}</div>
                   <div matListItemLine class="f-s-14 mat-body-1">{{ work.fileurl }}</div>
                   <div matListItemLine class="f-s-14 mat-body-1" style="color:green;font-size:large;font-weight:bolder">{{work.completePercentage}}% Complete 
@@ -118,6 +122,9 @@
                 <!-- <span>{{basedecode(quest.image)}}</span> -->
                 <img [src]="basedecode(quest.image)" style="width:40%" />
             </div>
+            <div>
+              <label style="font-weight:bold;font-size:large">Options</label>
+            </div>
             <div *ngFor="let opt of quest.options;let j= index">
               <!-- <li >{{opt}}</li>-->
               <!-- <p>{{opt['optType']}}</p> -->
@@ -163,6 +170,22 @@
               </select>
             </div>
             </div>
+            <div class="col-lg-6" style="position:relative;right:1%">
+              <label>
+                Difficulty Level
+              </label>
+              <select class="form-control" (change)="Onselectdifficulty($event,p)" [value]="quest.difficulty_level">
+                <option value="easy">
+                  Easy
+                </option>
+                <option value="medium">
+                  Medium
+                </option>
+                <option value="hard">
+                  Hard
+                </option>
+              </select>
+            </div>
             <div style="margin-top: 3%;">
               <p style="font-weight:bold;font-size:large">Answer</p>
               <span>Option ({{ReturnInt(quest.answer)+1}})</span>
@@ -180,7 +203,10 @@
                 </p>
               </span>
             </div>
-            <div style="display:flex;float:left;margin-top:3%;margin-bottom:4%">
+            <div>
+              
+            </div>
+          <div style="display:flex;float:left;margin-top:3%;margin-bottom:4%">
             <button class="form-control" style="background-color:green;color:white" *ngIf="quest.verified">Approved</button>
             <button class="success form-control" (click)="ApproveQuestion(quest,p)" *ngIf="!quest.verified">Approve</button>
             <button class="danger form-control" (click)="removeQuestion(quest,p)">Decline</button>

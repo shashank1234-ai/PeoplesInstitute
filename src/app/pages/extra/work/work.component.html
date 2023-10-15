@@ -192,14 +192,15 @@
             </div>
             <div *ngIf="quest.Explaination!=undefined" style="margin-top:2%">
               <p style="font-weight: bold;font-size:large">Explaination:</p>
-              <span *ngIf="quest.ExplainationType=='Image'">
+              <span *ngIf="quest.ExplainationType=='image'">
                 <p>
-                 <img [src]="basedecode(quest.Explaination)" style="width:50%" />
+                 <!-- <img [src]="basedecode(quest.Explaination.explanation)" style="width:50%" /> -->
+                 <img src="{{quest.Explaination.explanation}}" style="width:50%"/>
                 </p>
               </span>
-              <span *ngIf="quest.ExplainationType!='Image'">
+              <span *ngIf="quest.ExplainationType=='text'">
                 <p>
-                 {{quest.Explaination}}
+                 {{quest.Explaination.explanation}}
                 </p>
               </span>
             </div>

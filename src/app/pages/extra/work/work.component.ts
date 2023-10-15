@@ -252,9 +252,9 @@ import { Exception } from 'sass';
             for(let i=0;i<this.questionList.length;i++){
               this.questionList[i]['ChapterId'] = JSON.parse(res.data)['ChapterId']
               this.questionList[i]['SubjectId'] = JSON.parse(res.data)['SubjectId']
-              if(this.questionList[i]['Explaination']!=undefined || this.questionList[i]['Explaination']!=null || this.questionList[i]['Explaination']!=''){
-                this.questionList[i]['ExplainationType'] = 'Text'
-              }
+              // if(this.questionList[i]['Explaination']!=undefined || this.questionList[i]['Explaination']!=null || this.questionList[i]['Explaination']!=''){
+              //   this.questionList[i]['ExplainationType'] = 'Text'
+              // }
             }
           })
           
